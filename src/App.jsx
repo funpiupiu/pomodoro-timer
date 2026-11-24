@@ -11,10 +11,13 @@ import {
   Wind,
   Sliders,
   BookOpen,
+  Disc3,
+  Music2,
 } from 'lucide-react';
 import { THEMES } from './constants/themes';
 import { storageService } from './services/storageService';
 import { audioService } from './services/audioService';
+import { musicService } from './services/musicService';
 import { usePomodoroTimer } from './hooks/usePomodoroTimer';
 import BreathingTimerRing from './components/BreathingTimerRing';
 import ZenTaskAndNotesCard from './components/ZenTaskAndNotesCard';
@@ -25,6 +28,7 @@ import MultiTrackSoundMixerModal from './components/MultiTrackSoundMixerModal';
 import MindfulBreathingModal from './components/MindfulBreathingModal';
 import FeynmanReflectionModal from './components/FeynmanReflectionModal';
 import KnowledgeLogModal from './components/KnowledgeLogModal';
+import ZenMusicPlayerModal from './components/ZenMusicPlayerModal';
 
 const ZEN_QUOTES = [
   "Do one thing at a time, and do it with your whole heart.",
@@ -42,19 +46,35 @@ export default function App() {
   const [stats, setStats] = useState(() => storageService.loadStats());
   const [knowledgeLogs, setKnowledgeLogs] = useState(() => storageService.loadKnowledgeLogs());
 
+  // Modal open states
   const [isAnalyticsOpen, setIsAnalyticsOpen] = useState(false);
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [isMixerOpen, setIsMixerOpen] = useState(false);
   const [isBreathingOpen, setIsBreathingOpen] = useState(false);
   const [isFeynmanOpen, setIsFeynmanOpen] = useState(false);
   const [isKnowledgeLogOpen, setIsKnowledgeLogOpen] = useState(false);
+  const [isMusicOpen, setIsMusicOpen] = useState(false);
   const [isZenMode, setIsZenMode] = useState(false);
   const [quoteIndex, setQuoteIndex] = useState(0);
 
-  const currentTheme = THEMES[settings.theme] || THEMES.matcha;
-  const activeTask = tasks.find(t => t.id === activeTaskId && !t.isCompleted) || null;
+  // Music state subscription
+  const [musicState, setMusicState] = useState(() => ({
+    isPlaying: musicService.isPlaying,
+    currentTrack: musicService.currentTrack,
+  }));
 
-  // Persist settings
+  useEffect(() => {
+    return musicService.subscribe((state) => {
+      setMusicState({
+        isPlaying: state.isPlaying,
+        currentTrack: state.currentTrack,
+      });
+    });
+  }, []);
+
+  const currentTheme = THEMES[settings.theme] || THEMES.matcha;
+  const activeTask = tasks.find((t) => t.id === activeTaskId && !t.isCompleted) || null;
+
   const handleUpdateSettings = (newSettings) => {
     setSettings(newSettings);
     storageService.saveSettings(newSettings);
@@ -63,55 +83,50 @@ export default function App() {
     }
   };
 
-  // Focus session completed callback
-  const handleFocusComplete = useCallback((minutes) => {
-    const taskTag = activeTask?.tag || '#code';
+  const handleFocusComplete = useCallback(
+    (minutes) => {
+      const taskTag = activeTask?.tag || '#code';
 
-    // Increment active task pomodoro
-    if (activeTaskId) {
-      setTasks(prevTasks => {
-        const updated = prevTasks.map(t => {
-          if (t.id === activeTaskId) {
-            return { ...t, completedPomodoros: (t.completedPomodoros || 0) + 1 };
-          }
-          return t;
+      if (activeTaskId) {
+        setTasks((prevTasks) => {
+          const updated = prevTasks.map((t) => {
+            if (t.id === activeTaskId) {
+              return { ...t, completedPomodoros: (t.completedPomodoros || 0) + 1 };
+            }
+            return t;
+          });
+          storageService.saveTasks(updated);
+          return updated;
         });
-        storageService.saveTasks(updated);
-        return updated;
-      });
-    }
+      }
 
-    // Refresh stats
-    setStats(storageService.loadStats());
+      setStats(storageService.loadStats());
 
-    // Gentle pastel celebration
-    try {
-      confetti({
-        particleCount: 35,
-        spread: 60,
-        origin: { y: 0.75 },
-        colors: [currentTheme.accentColor, '#ffffff', '#e2ece6', '#fbbf24'],
-        disableForReducedMotion: true,
-      });
-    } catch (_) {}
+      try {
+        confetti({
+          particleCount: 35,
+          spread: 60,
+          origin: { y: 0.75 },
+          colors: [currentTheme.accentColor, '#ffffff', '#e2ece6', '#fbbf24'],
+          disableForReducedMotion: true,
+        });
+      } catch (_) {}
 
-    // Automatically trigger Feynman Reflection if enabled
-    if (settings.feynmanPromptEnabled !== false) {
-      setTimeout(() => {
-        setIsFeynmanOpen(true);
-      }, 700);
-    }
-  }, [activeTaskId, activeTask, currentTheme.accentColor, settings.feynmanPromptEnabled]);
+      if (settings.feynmanPromptEnabled !== false) {
+        setTimeout(() => {
+          setIsFeynmanOpen(true);
+        }, 700);
+      }
+    },
+    [activeTaskId, activeTask, currentTheme.accentColor, settings.feynmanPromptEnabled]
+  );
 
-  // Hook up timer
   const timer = usePomodoroTimer(settings, handleFocusComplete);
 
-  // Rotate quotes
   const rotateQuote = () => {
     setQuoteIndex((prev) => (prev + 1) % ZEN_QUOTES.length);
   };
 
-  // Task actions
   const handleAddTask = (newTask) => {
     const updated = [newTask, ...tasks];
     setTasks(updated);
@@ -123,17 +138,17 @@ export default function App() {
   };
 
   const handleToggleTask = (id) => {
-    const updated = tasks.map(t => (t.id === id ? { ...t, isCompleted: !t.isCompleted } : t));
+    const updated = tasks.map((t) => (t.id === id ? { ...t, isCompleted: !t.isCompleted } : t));
     setTasks(updated);
     storageService.saveTasks(updated);
   };
 
   const handleDeleteTask = (id) => {
-    const updated = tasks.filter(t => t.id !== id);
+    const updated = tasks.filter((t) => t.id !== id);
     setTasks(updated);
     storageService.saveTasks(updated);
     if (activeTaskId === id) {
-      const remaining = updated.find(t => !t.isCompleted);
+      const remaining = updated.find((t) => !t.isCompleted);
       const nextId = remaining ? remaining.id : null;
       setActiveTaskId(nextId);
       storageService.saveActiveTaskId(nextId);
@@ -141,7 +156,7 @@ export default function App() {
   };
 
   const handleClearCompleted = () => {
-    const updated = tasks.filter(t => !t.isCompleted);
+    const updated = tasks.filter((t) => !t.isCompleted);
     setTasks(updated);
     storageService.saveTasks(updated);
   };
@@ -151,7 +166,7 @@ export default function App() {
     storageService.saveActiveTaskId(id);
   };
 
-  // Keyboard shortcuts
+  // Global Keyboard shortcuts
   useEffect(() => {
     const handleKeyDown = (e) => {
       if (['INPUT', 'TEXTAREA'].includes(e.target.tagName)) return;
@@ -164,11 +179,13 @@ export default function App() {
       } else if (e.key === 's' || e.key === 'S') {
         timer.skipToNext();
       } else if (e.key === 'f' || e.key === 'F') {
-        setIsZenMode(prev => !prev);
+        setIsZenMode((prev) => !prev);
       } else if (e.key === 'b' || e.key === 'B') {
-        setIsBreathingOpen(prev => !prev);
+        setIsBreathingOpen((prev) => !prev);
       } else if (e.key === 'k' || e.key === 'K') {
-        setIsKnowledgeLogOpen(prev => !prev);
+        setIsKnowledgeLogOpen((prev) => !prev);
+      } else if (e.key === 'm' || e.key === 'M') {
+        setIsMusicOpen((prev) => !prev);
       } else if (e.key === 'Escape') {
         setIsAnalyticsOpen(false);
         setIsSettingsOpen(false);
@@ -176,6 +193,7 @@ export default function App() {
         setIsBreathingOpen(false);
         setIsFeynmanOpen(false);
         setIsKnowledgeLogOpen(false);
+        setIsMusicOpen(false);
         setIsZenMode(false);
       }
     };
@@ -240,6 +258,29 @@ export default function App() {
                 theme={currentTheme}
               />
             </div>
+
+            {/* Chinese Music Player Vinyl Button */}
+            <button
+              onClick={() => setIsMusicOpen(true)}
+              title={
+                musicState.isPlaying
+                  ? `Playing: ${musicState.currentTrack.title} (Press M)`
+                  : 'Chinese Chill & Lo-Fi Lounge (Press M)'
+              }
+              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full border transition-all cursor-pointer shadow-sm ${
+                musicState.isPlaying
+                  ? 'bg-amber-400/20 text-amber-300 border-amber-400/40 shadow-amber-400/10'
+                  : 'bg-white/5 hover:bg-white/10 border-white/5 text-white/70 hover:text-white'
+              }`}
+            >
+              <Disc3
+                className={`w-4 h-4 ${musicState.isPlaying ? 'animate-[spin_4s_linear_infinite]' : ''}`}
+                style={{ color: musicState.isPlaying ? '#fbbf24' : 'currentColor' }}
+              />
+              <span className="text-xs font-medium hidden sm:inline">
+                {musicState.isPlaying ? 'Music' : 'Lo-Fi'}
+              </span>
+            </button>
 
             {/* Knowledge Log button */}
             <button
@@ -327,7 +368,7 @@ export default function App() {
           </div>
         )}
 
-        {/* Tasks & Mindful Scratchpad Dual Tab Card (Hidden in Zen Mode) */}
+        {/* Tasks & Mindful Scratchpad Dual Tab Card */}
         {!isZenMode && (
           <div className="w-full mt-6">
             <ZenTaskAndNotesCard
@@ -358,7 +399,9 @@ export default function App() {
           </div>
 
           <div className="flex items-center gap-3">
-            <span>Press <kbd className="px-1.5 py-0.5 rounded bg-white/10 text-white font-mono text-[10px]">Space</kbd> to Begin</span>
+            <span>
+              Press <kbd className="px-1.5 py-0.5 rounded bg-white/10 text-white font-mono text-[10px]">Space</kbd> to Begin
+            </span>
             <span>•</span>
             <span className="text-[11px]">100% Offline & Private</span>
           </div>
@@ -405,7 +448,7 @@ export default function App() {
         isOpen={isFeynmanOpen}
         onClose={() => setIsFeynmanOpen(false)}
         activeTask={activeTask}
-        onSaved={(newLog) => {
+        onSaved={() => {
           setKnowledgeLogs(storageService.loadKnowledgeLogs());
         }}
         theme={currentTheme}
@@ -416,6 +459,12 @@ export default function App() {
         onClose={() => setIsKnowledgeLogOpen(false)}
         knowledgeLogs={knowledgeLogs}
         onUpdateLogs={(updated) => setKnowledgeLogs(updated)}
+        theme={currentTheme}
+      />
+
+      <ZenMusicPlayerModal
+        isOpen={isMusicOpen}
+        onClose={() => setIsMusicOpen(false)}
         theme={currentTheme}
       />
     </div>

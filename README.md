@@ -1,47 +1,41 @@
-# 🌿 ZenFocus 2.0 — Aesthetic Pomodoro & Mindful Flow OS
+# 🌿 ZenFocus 3.0 — Aesthetic Pomodoro, Deep Learning & Chinese Chill Lounge
 
-A serene, distraction-free productivity web workspace featuring a Pomodoro timer with mindful breathing animations, multi-track nature soundscapes, scientific binaural beats, box breathing guides, task tags, and productivity heatmaps.
+A serene, distraction-free productivity web workspace featuring a Pomodoro timer with mindful breathing animations, multi-track nature soundscapes, scientific binaural beats, box breathing guides, knowledge logs, and an authentic **Chinese Chill & Lo-Fi Lounge**.
 
 Built with **React 18**, **Vite**, **Tailwind CSS**, and **Web Audio API**.
 
 ---
 
-## ✨ New & Advanced Features in v2.0
+## ✨ Features Overview
 
-### 1. 🎛️ Multi-Track Procedural Sound Mixer
-- **Layer multiple soundscapes simultaneously** with independent volume faders:
-  - Gentle Rain, Ocean Waves, Forest Wind, Campfire, Brown Noise.
-- **Master Dynamics Compressor** ensures zero audio clipping/distortion.
-- **Zen Sound Presets:**
-  - *Kyoto Rain:* Gentle Rain + Forest Wind
-  - *Nordic Cabin:* Campfire + Gentle Rain
-  - *Deep Code:* Brown Noise + Gentle Rain
-  - *Zen Sanctuary:* Forest Wind + Ocean Waves
+### 1. 🎵 Chinese Chill & Lo-Fi Music Lounge
+- **Curated Playlist of Iconic & Trending Chinese Melodies:**
+  - *飞鸟和蝉 (Phi Điểu Và Ve Sầu)* — Lo-Fi Acoustic
+  - *渡我不渡她 (Độ Ta Không Độ Nàng)* — Guzheng & Flute Meditation
+  - *芒种 (Mang Chủng - Grain in Ear)* — Oriental Chillhop
+  - *青花瓷 (Thanh Hoa Sứ - Jay Chou)* — Classical Masterpiece
+  - *烟花易冷 (Yên Hoa Dịch Lãnh)* — Guqin & Rainy Night
+  - *左手指月 (Tay Trái Chỉ Trăng)* — Meditative Ballad
+- **Aesthetic Vinyl Disc Player:** Rotating vinyl record with spin animation, seekable progress bar, repeat/shuffle modes, and volume control.
+- **Sound Co-existence:** Listen to Chinese lo-fi music layered together with procedural Gentle Rain or Campfire in the mixer for an ancient teahouse ambiance.
 
-### 2. 🎧 Scientific Binaural Beats Synthesizer
-Synthesized in real-time via dual stereo-panned oscillators (best experienced with headphones):
-- **Alpha Wave (10 Hz):** Creative flow, deep reading, writing.
-- **Beta Wave (18 Hz):** High alertness, analytical problem solving, complex coding.
-- **Theta Wave (6 Hz):** Restorative calm, meditation, mindful breaks.
+### 2. 🎛️ Multi-Track Procedural Sound Mixer & Binaural Beats
+- **Multi-Track Mixing:** Layer rain, ocean waves, forest wind, campfire, and brown noise simultaneously.
+- **Master Dynamics Compressor:** Prevents distortion or clipping.
+- **Binaural Beats:** Alpha (10 Hz), Beta (18 Hz), and Theta (6 Hz) waves for focus, coding, and meditation.
 
 ### 3. 🌬️ Mindful Respiration (Box Breathing & Mandala Guide)
-- **Box Breathing (4-4-4-4):** Navy SEAL & Zen breathing to reset nervous tension.
-- **Relaxing Breath (4-7-8):** Activates parasympathetic recovery during breaks.
-- **Visual Mandala Animation:** Synchronized expanding/contracting orb with phase countdowns.
-- **20-20-20 Eye-Rest Rule:** Reminds you to rest your eye muscles from screen fatigue.
+- Box Breathing (4-4-4-4) and Relaxing Breath (4-7-8) with real-time expanding/contracting mandala animations.
+- 20-20-20 Eye Rest Rule reminder.
 
-### 4. ⚡ Flow Mode (Overtime Counting) & Rhythm Presets
-- **Flow Mode:** If a session ends while you are in creative flow, the timer counts upward (`+01:23`) instead of interrupting your thoughts, letting you finish when ready.
-- **Rhythm Presets:**
-  - *Classic Pomodoro:* 25m Focus / 5m Break / 15m Long Break (4 cycles)
-  - *Deep Sprint:* 50m Focus / 10m Break / 20m Long Break (3 cycles)
-  - *Ultradian Rhythm:* 90m Peak Flow / 20m Rest / 30m Long Break (2 cycles)
-  - *Quick Blitz:* 15m Focus / 3m Break / 10m Long Break (4 cycles)
+### 4. 📝 Deep Learning & Feynman Reflection Suite
+- **Quick Notes Scratchpad:** Auto-saving notes tab linked to active tasks with markdown shortcuts.
+- **Feynman Synthesis:** 3 structured cognitive prompts after sessions.
+- **Knowledge Log:** Timeline view with search, tag filters, and clean `.md` export for Obsidian / Notion.
 
-### 5. 📊 Consistency Heatmap & Category Tags
-- **12-Week Consistency Heatmap:** GitHub-style visual grid tracking daily focused minutes.
-- **Task Category Tags:** `#Code`, `#Study`, `#Write`, `#Design`, `#Life` with colored badges and category distribution bars.
-- **Day Streak Tracker & Local-First JSON Backup.**
+### 5. ⚡ Flow Mode & 12-Week Consistency Heatmap
+- Overtime counting (`+01:23`) keeps focus unbroken when sessions finish.
+- GitHub-style consistency calendar heatmap and task tags.
 
 ---
 
@@ -51,7 +45,7 @@ Synthesized in real-time via dual stereo-panned oscillators (best experienced wi
 # Start development server
 npm run dev
 
-# Run automated test suite
+# Run automated tests
 npm test
 
 # Build production bundle
@@ -60,7 +54,5 @@ npm run build
 
 ---
 
-## 🛡️ Architecture & Security
-- **Local-First Architecture:** 100% private, zero telemetry, all data stays on your machine.
-- **Drift-Free Timing:** Uses `Date.now()` milestone comparison rather than pure interval counters, guaranteeing accurate timekeeping even when the browser tab is backgrounded.
-- **Zero-Crash Audio DSP:** Pure Web Audio API synthesis without external MP3 files or network bandwidth.
+## 🛡️ Live Production Deployment
+Online at: **[https://funpiupiu.github.io/pomodoro-timer/](https://funpiupiu.github.io/pomodoro-timer/)**

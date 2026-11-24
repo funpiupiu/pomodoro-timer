@@ -71,9 +71,8 @@ class AudioService {
 
   initContext() {
     if (!this.ctx) {
-      const AudioCtx = window.AudioContext || window.webkitAudioContext;
+      const AudioCtx = typeof window !== 'undefined' ? (window.AudioContext || window.webkitAudioContext) : null;
       if (!AudioCtx) {
-        console.warn('Web Audio API not supported in this environment');
         return false;
       }
       this.ctx = new AudioCtx();

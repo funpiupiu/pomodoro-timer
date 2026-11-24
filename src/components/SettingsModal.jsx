@@ -1,5 +1,5 @@
 import React from 'react';
-import { X, Settings2, Sliders, Palette, Volume2, Bell, Keyboard, Zap, Sparkles, BookOpen } from 'lucide-react';
+import { X, Settings2, Sliders, Palette, Volume2, Bell, Keyboard, Zap, Sparkles, BookOpen, Music } from 'lucide-react';
 import { THEMES } from '../constants/themes';
 import { SESSION_PRESETS } from '../constants/presets';
 import { audioService } from '../services/audioService';
@@ -250,6 +250,10 @@ export default function SettingsModal({
             <div className="flex items-center justify-between p-2 rounded-xl bg-white/5">
               <span>Start / Pause</span>
               <kbd className="px-2 py-0.5 rounded bg-black/40 text-white font-mono text-[11px]">Space</kbd>
+            </div>
+            <div className="flex items-center justify-between p-2 rounded-xl bg-white/5">
+              <span>Chinese Music Player</span>
+              <kbd className="px-2 py-0.5 rounded bg-black/40 text-white font-mono text-[11px]">M</kbd>
             </div>
             <div className="flex items-center justify-between p-2 rounded-xl bg-white/5">
               <span>Knowledge Log</span>
