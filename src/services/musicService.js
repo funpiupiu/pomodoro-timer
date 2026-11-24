@@ -1,16 +1,25 @@
 /**
- * ZenFocus Music Player Service (Chinese Chill & Lo-Fi Edition)
- * - Real-time procedural Guzheng, Guqin & Piano synthesis of authentic melodies
- * - Smooth integration with Master Audio Bus (can play simultaneously with rain/campfire)
- * - Loop, Shuffle, Seekable playback and track progress tracking
+ * ZenFocus Master Music Service (Multi-Genre Mindful Suite)
+ * - Baroque 60 BPM (Superlearning & Alpha Wave)
+ * - Classical Peace & Piano Suite
+ * - Chinese Chill & Lo-Fi Lounge
+ *
+ * Real-time Web Audio API DSP synthesis for Harpsichord, Grand Piano, Strings & Guzheng.
+ * 100% Offline, zero-telemetry, perfectly layered with Ambient Noise & Binaural Beats.
  */
 
-import { CHINESE_PLAYLIST, NOTE_FREQS } from '../constants/chinesePlaylist';
+import {
+  ALL_MUSIC_TRACKS,
+  NOTE_FREQS,
+  GENRES,
+} from '../constants/musicPlaylists';
 import { audioService } from './audioService';
 
 class MusicService {
   constructor() {
-    this.playlist = CHINESE_PLAYLIST;
+    this.allTracks = ALL_MUSIC_TRACKS;
+    this.selectedCategory = 'all'; // 'all' | 'baroque' | 'classical' | 'chinese'
+    this.playlist = this.allTracks;
     this.currentIndex = 0;
     this.isPlaying = false;
     this.volume = 0.55;
@@ -26,7 +35,7 @@ class MusicService {
   }
 
   get currentTrack() {
-    return this.playlist[this.currentIndex] || this.playlist[0];
+    return this.playlist[this.currentIndex] || this.playlist[0] || this.allTracks[0];
   }
 
   subscribe(listener) {
@@ -40,13 +49,38 @@ class MusicService {
       currentTrack: this.currentTrack,
       currentIndex: this.currentIndex,
       currentTime: this.currentTime,
-      duration: this.currentTrack.duration,
+      duration: this.currentTrack ? this.currentTrack.duration : 0,
       volume: this.volume,
       repeatMode: this.repeatMode,
       isShuffled: this.isShuffled,
       playlist: this.playlist,
+      selectedCategory: this.selectedCategory,
+      allTracksCount: this.allTracks.length,
     };
     this.listeners.forEach((fn) => fn(state));
+  }
+
+  setCategory(category) {
+    this.selectedCategory = category;
+    if (category === 'all') {
+      this.playlist = this.allTracks;
+    } else {
+      this.playlist = this.allTracks.filter((t) => t.category === category);
+    }
+
+    // Keep active track index aligned if possible, or reset to 0
+    const currentTrackId = this.currentTrack?.id;
+    const newIdx = this.playlist.findIndex((t) => t.id === currentTrackId);
+    if (newIdx !== -1) {
+      this.currentIndex = newIdx;
+    } else {
+      this.currentIndex = 0;
+      this.currentTime = 0;
+      if (this.isPlaying) {
+        this.startPlayback();
+      }
+    }
+    this.notify();
   }
 
   setVolume(vol) {
@@ -61,6 +95,22 @@ class MusicService {
     this.currentTime = 0;
     this.melodyNoteIndex = 0;
     this.startPlayback();
+  }
+
+  playTrackById(trackId) {
+    const idx = this.playlist.findIndex((t) => t.id === trackId);
+    if (idx !== -1) {
+      this.playTrack(idx);
+    } else {
+      // Find in all tracks and switch category if necessary
+      const globalTrack = this.allTracks.find((t) => t.id === trackId);
+      if (globalTrack) {
+        this.selectedCategory = 'all';
+        this.playlist = this.allTracks;
+        const targetIdx = this.playlist.findIndex((t) => t.id === trackId);
+        this.playTrack(targetIdx !== -1 ? targetIdx : 0);
+      }
+    }
   }
 
   togglePlay() {
@@ -78,9 +128,12 @@ class MusicService {
   }
 
   nextTrack() {
+    if (this.playlist.length === 0) return;
     let nextIdx;
-    if (this.isShuffled) {
-      nextIdx = Math.floor(Math.random() * this.playlist.length);
+    if (this.isShuffled && this.playlist.length > 1) {
+      do {
+        nextIdx = Math.floor(Math.random() * this.playlist.length);
+      } while (nextIdx === this.currentIndex);
     } else {
       nextIdx = (this.currentIndex + 1) % this.playlist.length;
     }
@@ -88,6 +141,7 @@ class MusicService {
   }
 
   prevTrack() {
+    if (this.playlist.length === 0) return;
     if (this.currentTime > 5) {
       this.seek(0);
       return;
@@ -163,16 +217,16 @@ class MusicService {
     const melody = track.melody || [];
     if (melody.length === 0) return;
 
-    const beatDurationMs = (60 / (track.bpm || 72)) * 1000;
+    const beatDurationMs = (60 / (track.bpm || 60)) * 1000;
     let accumulatedDelay = 0;
 
-    melody.forEach((noteItem, idx) => {
+    melody.forEach((noteItem) => {
       const delay = accumulatedDelay;
       const durationSec = noteItem.duration * (beatDurationMs / 1000);
 
       const timeoutId = setTimeout(() => {
         if (this.isPlaying) {
-          this._pluckGuzhengString(noteItem.note, durationSec);
+          this._playSynthesizedNote(noteItem.note, durationSec, track.instrument || 'guzheng');
         }
       }, delay);
 
@@ -180,7 +234,7 @@ class MusicService {
       accumulatedDelay += noteItem.duration * beatDurationMs;
     });
 
-    // Schedule the next phrase when this phrase finishes
+    // Schedule the next phrase loop
     const loopTimeout = setTimeout(() => {
       if (this.isPlaying) {
         this.noteTimeouts = [];
@@ -192,15 +246,184 @@ class MusicService {
   }
 
   /**
-   * Procedural Guzheng String Synthesis (Physical Pluck Modeling)
+   * Instrument Dispatcher: Harpsichord, Grand Piano, Strings & Guzheng
    */
-  _pluckGuzhengString(noteName, lengthSec = 1.0) {
+  _playSynthesizedNote(noteName, lengthSec = 1.0, instrument = 'guzheng') {
     if (!audioService.ctx || !this.isPlaying || this.volume <= 0) return;
-    const ctx = audioService.ctx;
-    const now = ctx.currentTime;
     const freq = NOTE_FREQS[noteName] || 440;
 
-    // Harmonics for a bright wooden Guzheng / Guqin string
+    switch (instrument) {
+      case 'harpsichord':
+        this._playHarpsichord(freq, lengthSec);
+        break;
+      case 'piano':
+        this._playGrandPiano(freq, lengthSec);
+        break;
+      case 'strings':
+        this._playBaroqueStrings(freq, lengthSec);
+        break;
+      case 'guzheng':
+      default:
+        this._playGuzheng(freq, lengthSec);
+        break;
+    }
+  }
+
+  /**
+   * 1. Baroque Harpsichord (Clavecin) Synthesis
+   * Bright plucked metallic plectrum with crisp odd harmonics and sharp release
+   */
+  _playHarpsichord(freq, lengthSec) {
+    const ctx = audioService.ctx;
+    const now = ctx.currentTime;
+    const decay = Math.min(lengthSec * 1.6, 2.5);
+
+    try {
+      const osc1 = ctx.createOscillator();
+      const osc2 = ctx.createOscillator();
+      const gainNode = ctx.createGain();
+      const filter = ctx.createBiquadFilter();
+
+      osc1.type = 'sawtooth';
+      osc1.frequency.setValueAtTime(freq, now);
+
+      osc2.type = 'triangle';
+      osc2.frequency.setValueAtTime(freq * 2.002, now); // Slightly detuned 2nd harmonic octave
+
+      // Harpsichord highpass/bright lowpass
+      filter.type = 'lowpass';
+      filter.frequency.setValueAtTime(4800, now);
+      filter.frequency.exponentialRampToValueAtTime(1400, now + decay);
+
+      // Plectrum pluck attack (fast 4ms)
+      const effectiveGain = this.volume * 0.22;
+      gainNode.gain.setValueAtTime(0.0001, now);
+      gainNode.gain.exponentialRampToValueAtTime(effectiveGain, now + 0.005);
+      gainNode.gain.exponentialRampToValueAtTime(effectiveGain * 0.35, now + 0.12);
+      gainNode.gain.exponentialRampToValueAtTime(0.0001, now + decay);
+
+      osc1.connect(filter);
+      osc2.connect(filter);
+      filter.connect(gainNode);
+
+      if (audioService.masterCompressor) {
+        gainNode.connect(audioService.masterCompressor);
+      } else {
+        gainNode.connect(ctx.destination);
+      }
+
+      osc1.start(now);
+      osc2.start(now);
+      osc1.stop(now + decay);
+      osc2.stop(now + decay);
+    } catch (_) {}
+  }
+
+  /**
+   * 2. Classical Grand Piano Synthesis
+   * Warm felt-hammer strike, rich fundamental + detuned pair, warm lowpass
+   */
+  _playGrandPiano(freq, lengthSec) {
+    const ctx = audioService.ctx;
+    const now = ctx.currentTime;
+    const decay = Math.max(lengthSec * 2.2, 1.8);
+
+    try {
+      const oscFundamental = ctx.createOscillator();
+      const oscOvertone = ctx.createOscillator();
+      const gainNode = ctx.createGain();
+      const filter = ctx.createBiquadFilter();
+
+      oscFundamental.type = 'sine';
+      oscFundamental.frequency.setValueAtTime(freq, now);
+
+      oscOvertone.type = 'triangle';
+      oscOvertone.frequency.setValueAtTime(freq * 1.998, now); // Natural string chorus
+
+      filter.type = 'lowpass';
+      filter.frequency.setValueAtTime(1800, now);
+      filter.frequency.exponentialRampToValueAtTime(600, now + decay);
+
+      const effectiveGain = this.volume * 0.28;
+      gainNode.gain.setValueAtTime(0.0001, now);
+      gainNode.gain.exponentialRampToValueAtTime(effectiveGain, now + 0.015);
+      gainNode.gain.exponentialRampToValueAtTime(effectiveGain * 0.45, now + 0.2);
+      gainNode.gain.exponentialRampToValueAtTime(0.0001, now + decay);
+
+      oscFundamental.connect(filter);
+      oscOvertone.connect(filter);
+      filter.connect(gainNode);
+
+      if (audioService.masterCompressor) {
+        gainNode.connect(audioService.masterCompressor);
+      } else {
+        gainNode.connect(ctx.destination);
+      }
+
+      oscFundamental.start(now);
+      oscOvertone.start(now);
+      oscFundamental.stop(now + decay);
+      oscOvertone.stop(now + decay);
+    } catch (_) {}
+  }
+
+  /**
+   * 3. Baroque Chamber Strings (Violin / Cello)
+   * Smooth legato bow attack, gentle 5Hz vibrato, rich sustained warmth
+   */
+  _playBaroqueStrings(freq, lengthSec) {
+    const ctx = audioService.ctx;
+    const now = ctx.currentTime;
+    const decay = lengthSec * 1.8;
+
+    try {
+      const osc = ctx.createOscillator();
+      const gainNode = ctx.createGain();
+      const filter = ctx.createBiquadFilter();
+
+      // Expressive chamber vibrato
+      const vibrato = ctx.createOscillator();
+      const vibratoGain = ctx.createGain();
+      vibrato.frequency.setValueAtTime(5.0, now);
+      vibratoGain.gain.setValueAtTime(2.2, now);
+      vibrato.connect(osc.frequency);
+      vibrato.start(now);
+      vibrato.stop(now + decay);
+
+      osc.type = 'sawtooth';
+      osc.frequency.setValueAtTime(freq, now);
+
+      filter.type = 'lowpass';
+      filter.frequency.setValueAtTime(1400, now);
+
+      // Soft bow attack (45ms)
+      const effectiveGain = this.volume * 0.18;
+      gainNode.gain.setValueAtTime(0.0001, now);
+      gainNode.gain.exponentialRampToValueAtTime(effectiveGain, now + 0.045);
+      gainNode.gain.setValueAtTime(effectiveGain * 0.8, now + lengthSec * 0.8);
+      gainNode.gain.exponentialRampToValueAtTime(0.0001, now + decay);
+
+      osc.connect(filter);
+      filter.connect(gainNode);
+
+      if (audioService.masterCompressor) {
+        gainNode.connect(audioService.masterCompressor);
+      } else {
+        gainNode.connect(ctx.destination);
+      }
+
+      osc.start(now);
+      osc.stop(now + decay);
+    } catch (_) {}
+  }
+
+  /**
+   * 4. Chinese Guzheng & Guqin (Wooden String Pluck)
+   */
+  _playGuzheng(freq, lengthSec) {
+    const ctx = audioService.ctx;
+    const now = ctx.currentTime;
+
     const harmonics = [
       { mult: 1, gain: 0.65, decay: lengthSec * 2.2 },
       { mult: 2, gain: 0.28, decay: lengthSec * 1.5 },
@@ -213,7 +436,7 @@ class MusicService {
         const osc = ctx.createOscillator();
         const gainNode = ctx.createGain();
 
-        // Subtle Guzheng vibrato / pitch bend
+        // Subtle Guzheng vibrato
         const lfo = ctx.createOscillator();
         const lfoGain = ctx.createGain();
         lfo.frequency.setValueAtTime(4.2, now);
@@ -222,16 +445,14 @@ class MusicService {
         lfo.start(now);
         lfo.stop(now + decay);
 
-        osc.type = 'triangle'; // Warmer string pluck timbre
+        osc.type = 'triangle';
         osc.frequency.setValueAtTime(freq * mult, now);
 
-        // String Pluck Envelope
-        const effectiveGain = gain * this.volume * 0.4;
+        const effectiveGain = gain * this.volume * 0.35;
         gainNode.gain.setValueAtTime(0.001, now);
         gainNode.gain.exponentialRampToValueAtTime(effectiveGain, now + 0.012);
         gainNode.gain.exponentialRampToValueAtTime(0.0001, now + decay);
 
-        // Warm Lowpass Filter for Lo-Fi aesthetic
         const filter = ctx.createBiquadFilter();
         filter.type = 'lowpass';
         filter.frequency.setValueAtTime(2200, now);

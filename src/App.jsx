@@ -259,13 +259,13 @@ export default function App() {
               />
             </div>
 
-            {/* Chinese Music Player Vinyl Button */}
+            {/* Music Lounge Vinyl Button */}
             <button
               onClick={() => setIsMusicOpen(true)}
               title={
                 musicState.isPlaying
                   ? `Playing: ${musicState.currentTrack.title} (Press M)`
-                  : 'Chinese Chill & Lo-Fi Lounge (Press M)'
+                  : 'Mindful Music Lounge - Baroque 60 BPM & Classical (Press M)'
               }
               className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full border transition-all cursor-pointer shadow-sm ${
                 musicState.isPlaying
@@ -278,7 +278,7 @@ export default function App() {
                 style={{ color: musicState.isPlaying ? '#fbbf24' : 'currentColor' }}
               />
               <span className="text-xs font-medium hidden sm:inline">
-                {musicState.isPlaying ? 'Music' : 'Lo-Fi'}
+                {musicState.isPlaying ? 'Music' : 'Lounge'}
               </span>
             </button>
 

@@ -12,10 +12,14 @@ import {
   VolumeX,
   Disc3,
   Music2,
+  Music,
   Sparkles,
   CloudRain,
+  Brain,
+  Crown,
 } from 'lucide-react';
 import { musicService } from '../services/musicService';
+import { GENRES } from '../constants/musicPlaylists';
 
 export default function ZenMusicPlayerModal({
   isOpen,
@@ -27,11 +31,13 @@ export default function ZenMusicPlayerModal({
     currentTrack: musicService.currentTrack,
     currentIndex: musicService.currentIndex,
     currentTime: musicService.currentTime,
-    duration: musicService.currentTrack.duration,
+    duration: musicService.currentTrack ? musicService.currentTrack.duration : 0,
     volume: musicService.volume,
     repeatMode: musicService.repeatMode,
     isShuffled: musicService.isShuffled,
     playlist: musicService.playlist,
+    selectedCategory: musicService.selectedCategory,
+    allTracksCount: musicService.allTracks.length,
   }));
 
   const [activeTab, setActiveTab] = useState('player'); // 'player' | 'playlist'
@@ -45,16 +51,24 @@ export default function ZenMusicPlayerModal({
 
   if (!isOpen) return null;
 
-  const { isPlaying, currentTrack, currentIndex, currentTime, duration, volume, repeatMode, isShuffled, playlist } =
-    playerState;
+  const {
+    isPlaying,
+    currentTrack,
+    currentIndex,
+    currentTime,
+    duration,
+    volume,
+    repeatMode,
+    isShuffled,
+    playlist,
+    selectedCategory,
+  } = playerState;
 
   const formatTime = (sec) => {
     const m = Math.floor(sec / 60);
     const s = Math.floor(sec % 60);
     return `${m}:${String(s).padStart(2, '0')}`;
   };
-
-  const progressPercent = duration > 0 ? (currentTime / duration) * 100 : 0;
 
   const handleSeek = (e) => {
     const val = parseFloat(e.target.value);
@@ -66,6 +80,35 @@ export default function ZenMusicPlayerModal({
     musicService.setVolume(val);
   };
 
+  const handleCategorySelect = (catId) => {
+    musicService.setCategory(catId);
+  };
+
+  // Center badge config based on category
+  const getBadgeIcon = (cat) => {
+    switch (cat) {
+      case 'baroque':
+        return <Crown className="w-5 h-5 text-amber-200" />;
+      case 'classical':
+        return <Music className="w-5 h-5 text-indigo-200" />;
+      case 'chinese':
+      default:
+        return <Disc3 className="w-5 h-5 text-emerald-200" />;
+    }
+  };
+
+  const getCategoryLabel = (cat) => {
+    switch (cat) {
+      case 'baroque':
+        return 'BAROQUE 60';
+      case 'classical':
+        return 'CLASSICAL';
+      case 'chinese':
+      default:
+        return 'ZEN LO-FI';
+    }
+  };
+
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-md animate-fade-in">
       <div
@@ -73,13 +116,17 @@ export default function ZenMusicPlayerModal({
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
-        <div className="flex items-center justify-between pb-3 border-b border-white/10 mb-4">
-          <div className="flex items-center gap-2">
-            <Music2 className="w-5 h-5 text-amber-300" />
+        <div className="flex items-center justify-between pb-3 border-b border-white/10 mb-3">
+          <div className="flex items-center gap-2.5">
+            <div className="p-2 rounded-xl bg-amber-400/10 text-amber-300 border border-amber-400/20">
+              <Disc3 className={`w-5 h-5 ${isPlaying ? 'animate-[spin_6s_linear_infinite]' : ''}`} />
+            </div>
             <div>
-              <h2 className="text-base font-semibold text-white">Chinese Chill & Lo-Fi Lounge</h2>
+              <h2 className="text-base font-semibold text-white tracking-tight">
+                ZenFocus Mindful Music Lounge
+              </h2>
               <p className="text-[11px] text-white/50">
-                Acoustic Guqin, Guzheng & Lo-Fi Ballads
+                Baroque 60 BPM · Cổ Điển Tĩnh Lặng · Nhạc Hoa Chill
               </p>
             </div>
           </div>
@@ -101,7 +148,7 @@ export default function ZenMusicPlayerModal({
                   activeTab === 'playlist' ? theme.pillActive : 'text-white/50 hover:text-white'
                 }`}
               >
-                Playlist ({playlist.length})
+                Tracks ({playlist.length})
               </button>
             </div>
 
@@ -114,14 +161,39 @@ export default function ZenMusicPlayerModal({
           </div>
         </div>
 
+        {/* GENRE / CATEGORY PILL SELECTOR */}
+        <div className="flex items-center gap-1.5 overflow-x-auto pb-2 scrollbar-none mb-2">
+          {GENRES.map((g) => {
+            const isSelected = selectedCategory === g.id;
+            return (
+              <button
+                key={g.id}
+                onClick={() => handleCategorySelect(g.id)}
+                className={`flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium whitespace-nowrap transition-all cursor-pointer border ${
+                  isSelected
+                    ? 'bg-amber-400/20 text-amber-200 border-amber-400/40 shadow-sm'
+                    : 'bg-white/5 text-white/60 hover:text-white hover:bg-white/10 border-white/5'
+                }`}
+              >
+                {g.id === 'all' && <Sparkles className="w-3.5 h-3.5" />}
+                {g.id === 'baroque' && <Crown className="w-3.5 h-3.5" />}
+                {g.id === 'classical' && <Music className="w-3.5 h-3.5" />}
+                {g.id === 'chinese' && <Music2 className="w-3.5 h-3.5" />}
+                <span>{g.label}</span>
+                <span className="text-[10px] opacity-60">({g.count})</span>
+              </button>
+            );
+          })}
+        </div>
+
         {/* TAB: VINYL PLAYER */}
         {activeTab === 'player' && (
           <div className="flex flex-col items-center py-2 animate-fade-in">
             {/* Rotating Vinyl Record Graphic */}
-            <div className="relative my-4 flex items-center justify-center w-52 h-52 select-none">
+            <div className="relative my-3 flex items-center justify-center w-52 h-52 select-none">
               {/* Outer Vinyl Glow */}
               <div
-                className={`absolute inset-0 rounded-full filter blur-xl opacity-20 transition-all duration-1000 ${
+                className={`absolute inset-0 rounded-full filter blur-xl opacity-25 transition-all duration-1000 ${
                   isPlaying ? 'scale-110' : 'scale-95'
                 }`}
                 style={{ backgroundColor: currentTrack.coverColor }}
@@ -130,7 +202,7 @@ export default function ZenMusicPlayerModal({
               {/* Vinyl Disc Body */}
               <div
                 className={`w-48 h-48 rounded-full bg-[#121214] border-4 border-[#222225] shadow-2xl relative flex items-center justify-center ${
-                  isPlaying ? 'animate-[spin_12s_linear_infinite]' : ''
+                  isPlaying ? 'animate-[spin_14s_linear_infinite]' : ''
                 }`}
                 style={{
                   backgroundImage:
@@ -139,12 +211,15 @@ export default function ZenMusicPlayerModal({
               >
                 {/* Center Record Label */}
                 <div
-                  className="w-20 h-20 rounded-full shadow-inner flex flex-col items-center justify-center p-2 text-center border-2 border-white/20"
+                  className="w-20 h-20 rounded-full shadow-inner flex flex-col items-center justify-center p-2 text-center border-2 border-white/20 transition-colors duration-500"
                   style={{ backgroundColor: currentTrack.coverColor }}
                 >
-                  <Disc3 className="w-6 h-6 text-black/80" />
-                  <span className="text-[9px] font-bold text-black/90 uppercase tracking-tighter truncate max-w-[65px] mt-0.5">
-                    ZenFocus
+                  {getBadgeIcon(currentTrack.category)}
+                  <span className="text-[8px] font-bold text-white uppercase tracking-wider truncate max-w-[65px] mt-0.5">
+                    {getCategoryLabel(currentTrack.category)}
+                  </span>
+                  <span className="text-[7px] text-white/70 font-mono tracking-tighter">
+                    {currentTrack.bpm} BPM
                   </span>
                 </div>
 
@@ -153,13 +228,20 @@ export default function ZenMusicPlayerModal({
               </div>
             </div>
 
-            {/* Track Metadata */}
-            <div className="text-center my-3 px-4 max-w-sm">
-              <h3 className="text-base font-semibold text-white tracking-tight">
+            {/* Track Metadata & Category Badge */}
+            <div className="text-center my-2 px-4 max-w-sm">
+              <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-white/10 border border-white/10 text-[10px] text-amber-200/90 font-medium mb-1.5">
+                <span>{currentTrack.badgeText}</span>
+                <span>·</span>
+                <span>{currentTrack.bpm} BPM</span>
+                <span>·</span>
+                <span>{currentTrack.genre}</span>
+              </div>
+              <h3 className="text-base font-semibold text-white tracking-tight line-clamp-1">
                 {currentTrack.title}
               </h3>
               <p className="text-xs text-white/60 mt-0.5">{currentTrack.artist}</p>
-              <p className="text-[11px] italic text-white/40 mt-1 font-serif">
+              <p className="text-[11px] italic text-white/45 mt-1 font-serif line-clamp-2">
                 "{currentTrack.description}"
               </p>
             </div>
@@ -182,7 +264,7 @@ export default function ZenMusicPlayerModal({
             </div>
 
             {/* Controls Bar */}
-            <div className="flex items-center gap-5 my-3">
+            <div className="flex items-center gap-5 my-2">
               {/* Shuffle toggle */}
               <button
                 onClick={() => musicService.toggleShuffle()}
@@ -242,7 +324,7 @@ export default function ZenMusicPlayerModal({
             </div>
 
             {/* Volume Slider */}
-            <div className="flex items-center gap-2.5 w-60 mt-1 px-4 py-2 rounded-full bg-white/5 border border-white/5">
+            <div className="flex items-center gap-2.5 w-60 mt-1 px-4 py-1.5 rounded-full bg-white/5 border border-white/5">
               <Volume2 className="w-3.5 h-3.5 text-white/50" />
               <input
                 type="range"
@@ -264,7 +346,7 @@ export default function ZenMusicPlayerModal({
         {activeTab === 'playlist' && (
           <div className="space-y-2 py-2 max-h-80 overflow-y-auto pr-1 animate-fade-in">
             {playlist.map((track, idx) => {
-              const isActive = idx === currentIndex;
+              const isActive = track.id === currentTrack.id;
               return (
                 <div
                   key={track.id}
@@ -283,7 +365,13 @@ export default function ZenMusicPlayerModal({
                       }`}
                       style={{ backgroundColor: track.coverColor }}
                     >
-                      <Disc3 className="w-4 h-4 text-black/80" />
+                      {track.category === 'baroque' ? (
+                        <Crown className="w-4 h-4 text-white" />
+                      ) : track.category === 'classical' ? (
+                        <Music className="w-4 h-4 text-white" />
+                      ) : (
+                        <Disc3 className="w-4 h-4 text-white" />
+                      )}
                     </div>
 
                     <div className="min-w-0">
@@ -294,8 +382,11 @@ export default function ZenMusicPlayerModal({
                       >
                         {track.title}
                       </div>
-                      <div className="text-[10px] text-white/50 truncate">
-                        {track.artist} · {track.genre}
+                      <div className="text-[10px] text-white/50 truncate flex items-center gap-1.5 mt-0.5">
+                        <span className="px-1.5 py-0.2 rounded bg-white/10 text-[9px] text-white/80">
+                          {track.badgeText}
+                        </span>
+                        <span>{track.artist}</span>
                       </div>
                     </div>
                   </div>
@@ -318,12 +409,30 @@ export default function ZenMusicPlayerModal({
           </div>
         )}
 
-        {/* Ambient Harmony Tip */}
-        <div className="mt-4 pt-3 border-t border-white/10 flex items-center gap-2 text-[11px] text-white/60">
-          <CloudRain className="w-4 h-4 text-emerald-400 flex-shrink-0" />
-          <span>
-            <strong>Pro Tip:</strong> Bật kết hợp nhạc Hoa với tiếng Mưa rơi nhẹ ở nút Mixer để tạo cảm giác ngồi giữa quán trà cổ trấn!
-          </span>
+        {/* Ambient & Science Harmony Tip Footer */}
+        <div className="mt-3 pt-3 border-t border-white/10 flex items-start gap-2.5 text-[11px] text-white/60">
+          {currentTrack.category === 'baroque' ? (
+            <>
+              <Brain className="w-4 h-4 text-amber-300 flex-shrink-0 mt-0.5" />
+              <span>
+                <strong className="text-amber-200">Hiệu ứng Baroque Superlearning:</strong> Nhịp độ 60 BPM (Bach, Vivaldi, Handel, Pachelbel) kích hoạt sóng não Alpha (8-12Hz), tối ưu hóa tiếp thu tri thức và giữ bình tĩnh khi gõ code!
+              </span>
+            </>
+          ) : currentTrack.category === 'classical' ? (
+            <>
+              <Sparkles className="w-4 h-4 text-indigo-300 flex-shrink-0 mt-0.5" />
+              <span>
+                <strong className="text-indigo-200">Cổ Điển Trầm Lắng:</strong> Âm sắc Piano của Mozart & Satie giúp cân bằng hai bán cầu não, giảm thiểu áp lực nhận thức sau nhiều phiên Pomodoro.
+              </span>
+            </>
+          ) : (
+            <>
+              <CloudRain className="w-4 h-4 text-emerald-400 flex-shrink-0 mt-0.5" />
+              <span>
+                <strong className="text-emerald-300">Không Gian Trà Đạo Cổ Phong:</strong> Bật kết hợp nhạc Hoa với tiếng Mưa rơi nhẹ ở nút Mixer để tạo cảm giác ngồi giữa quán trà cổ trấn an yên!
+              </span>
+            </>
+          )}
         </div>
       </div>
     </div>
