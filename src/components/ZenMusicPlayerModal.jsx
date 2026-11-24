@@ -17,6 +17,7 @@ import {
   CloudRain,
   Brain,
   Crown,
+  Zap,
 } from 'lucide-react';
 import { musicService } from '../services/musicService';
 import { GENRES } from '../constants/musicPlaylists';
@@ -35,6 +36,8 @@ export default function ZenMusicPlayerModal({
     volume: musicService.volume,
     repeatMode: musicService.repeatMode,
     isShuffled: musicService.isShuffled,
+    playbackRate: musicService.playbackRate,
+    availableRates: musicService.availableRates || [0.75, 1.0, 1.25, 1.5, 2.0],
     playlist: musicService.playlist,
     selectedCategory: musicService.selectedCategory,
     allTracksCount: musicService.allTracks.length,
@@ -60,6 +63,8 @@ export default function ZenMusicPlayerModal({
     volume,
     repeatMode,
     isShuffled,
+    playbackRate,
+    availableRates = [0.75, 1.0, 1.25, 1.5, 2.0],
     playlist,
     selectedCategory,
   } = playerState;
@@ -82,6 +87,10 @@ export default function ZenMusicPlayerModal({
 
   const handleCategorySelect = (catId) => {
     musicService.setCategory(catId);
+  };
+
+  const handleRateSelect = (rate) => {
+    musicService.setPlaybackRate(rate);
   };
 
   // Center badge config based on category
@@ -109,6 +118,10 @@ export default function ZenMusicPlayerModal({
     }
   };
 
+  // Dynamic Vinyl Spin Speed (Faster playbackRate = faster rotation)
+  const spinDuration = isPlaying ? `${(14 / (playbackRate || 1.0)).toFixed(1)}s` : '14s';
+  const effectiveBpm = Math.round((currentTrack?.bpm || 60) * (playbackRate || 1.0));
+
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-md animate-fade-in">
       <div
@@ -119,7 +132,12 @@ export default function ZenMusicPlayerModal({
         <div className="flex items-center justify-between pb-3 border-b border-white/10 mb-3">
           <div className="flex items-center gap-2.5">
             <div className="p-2 rounded-xl bg-amber-400/10 text-amber-300 border border-amber-400/20">
-              <Disc3 className={`w-5 h-5 ${isPlaying ? 'animate-[spin_6s_linear_infinite]' : ''}`} />
+              <Disc3
+                className="w-5 h-5"
+                style={{
+                  animation: isPlaying ? `spin ${spinDuration} linear infinite` : 'none',
+                }}
+              />
             </div>
             <div>
               <h2 className="text-base font-semibold text-white tracking-tight">
@@ -189,7 +207,7 @@ export default function ZenMusicPlayerModal({
         {/* TAB: VINYL PLAYER */}
         {activeTab === 'player' && (
           <div className="flex flex-col items-center py-2 animate-fade-in">
-            {/* Rotating Vinyl Record Graphic */}
+            {/* Rotating Vinyl Record Graphic with Dynamic Speed */}
             <div className="relative my-3 flex items-center justify-center w-52 h-52 select-none">
               {/* Outer Vinyl Glow */}
               <div
@@ -201,10 +219,9 @@ export default function ZenMusicPlayerModal({
 
               {/* Vinyl Disc Body */}
               <div
-                className={`w-48 h-48 rounded-full bg-[#121214] border-4 border-[#222225] shadow-2xl relative flex items-center justify-center ${
-                  isPlaying ? 'animate-[spin_14s_linear_infinite]' : ''
-                }`}
+                className="w-48 h-48 rounded-full bg-[#121214] border-4 border-[#222225] shadow-2xl relative flex items-center justify-center"
                 style={{
+                  animation: isPlaying ? `spin ${spinDuration} linear infinite` : 'none',
                   backgroundImage:
                     'repeating-radial-gradient(circle, #1a1a1d 0, #1a1a1d 2px, #0e0e10 3px, #0e0e10 4px)',
                 }}
@@ -219,7 +236,7 @@ export default function ZenMusicPlayerModal({
                     {getCategoryLabel(currentTrack.category)}
                   </span>
                   <span className="text-[7px] text-white/70 font-mono tracking-tighter">
-                    {currentTrack.bpm} BPM
+                    {effectiveBpm} BPM
                   </span>
                 </div>
 
@@ -233,7 +250,10 @@ export default function ZenMusicPlayerModal({
               <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-white/10 border border-white/10 text-[10px] text-amber-200/90 font-medium mb-1.5">
                 <span>{currentTrack.badgeText}</span>
                 <span>·</span>
-                <span>{currentTrack.bpm} BPM</span>
+                <span>{effectiveBpm} BPM</span>
+                {playbackRate !== 1.0 && (
+                  <span className="text-amber-300 font-bold">({playbackRate}x)</span>
+                )}
                 <span>·</span>
                 <span>{currentTrack.genre}</span>
               </div>
@@ -247,7 +267,7 @@ export default function ZenMusicPlayerModal({
             </div>
 
             {/* Seekable Progress Bar */}
-            <div className="w-full px-4 my-2">
+            <div className="w-full px-4 my-1">
               <input
                 type="range"
                 min="0"
@@ -261,6 +281,29 @@ export default function ZenMusicPlayerModal({
                 <span>{formatTime(currentTime)}</span>
                 <span>{formatTime(duration)}</span>
               </div>
+            </div>
+
+            {/* SPEED SELECTOR PILLS (0.75x - 2.0x) */}
+            <div className="flex items-center gap-1.5 my-2 px-3 py-1 rounded-full bg-black/30 border border-white/5 text-xs">
+              <span className="text-[10px] text-white/40 font-medium flex items-center gap-1 mr-1">
+                <Zap className="w-3 h-3 text-amber-300" /> Tốc độ:
+              </span>
+              {availableRates.map((rate) => {
+                const isCurrent = playbackRate === rate;
+                return (
+                  <button
+                    key={rate}
+                    onClick={() => handleRateSelect(rate)}
+                    className={`px-2 py-0.5 rounded-full font-mono text-[11px] font-semibold transition-all cursor-pointer ${
+                      isCurrent
+                        ? 'bg-amber-400 text-black shadow-sm'
+                        : 'text-white/60 hover:text-white hover:bg-white/10'
+                    }`}
+                  >
+                    {rate}x
+                  </button>
+                );
+              })}
             </div>
 
             {/* Controls Bar */}
@@ -360,10 +403,11 @@ export default function ZenMusicPlayerModal({
                   <div className="flex items-center gap-3 min-w-0 pr-2">
                     {/* Disc thumbnail */}
                     <div
-                      className={`w-9 h-9 rounded-full flex items-center justify-center flex-shrink-0 shadow-inner ${
-                        isActive && isPlaying ? 'animate-spin' : ''
-                      }`}
-                      style={{ backgroundColor: track.coverColor }}
+                      className="w-9 h-9 rounded-full flex items-center justify-center flex-shrink-0 shadow-inner"
+                      style={{
+                        backgroundColor: track.coverColor,
+                        animation: isActive && isPlaying ? `spin ${spinDuration} linear infinite` : 'none',
+                      }}
                     >
                       {track.category === 'baroque' ? (
                         <Crown className="w-4 h-4 text-white" />
@@ -415,7 +459,7 @@ export default function ZenMusicPlayerModal({
             <>
               <Brain className="w-4 h-4 text-amber-300 flex-shrink-0 mt-0.5" />
               <span>
-                <strong className="text-amber-200">Hiệu ứng Baroque Superlearning:</strong> Nhịp độ 60 BPM (Bach, Vivaldi, Handel, Pachelbel) kích hoạt sóng não Alpha (8-12Hz), tối ưu hóa tiếp thu tri thức và giữ bình tĩnh khi gõ code!
+                <strong className="text-amber-200">Hiệu ứng Baroque Superlearning:</strong> Nhịp độ {effectiveBpm} BPM (Bach, Vivaldi, Handel, Pachelbel) kích hoạt sóng não Alpha (8-12Hz), tối ưu hóa tiếp thu tri thức và giữ bình tĩnh khi gõ code!
               </span>
             </>
           ) : currentTrack.category === 'classical' ? (

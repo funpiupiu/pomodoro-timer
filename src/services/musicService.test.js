@@ -140,4 +140,34 @@ describe('Multi-Genre Music Suite & Music Service', () => {
     musicService.toggleShuffle();
     expect(musicService.isShuffled).toBe(true);
   });
+
+  it('should support dynamic playback rate adjustment and cycling', () => {
+    expect(musicService.playbackRate).toBe(1.0);
+    expect(musicService.availableRates).toEqual([0.75, 1.0, 1.25, 1.5, 2.0]);
+
+    // Set specific speed
+    musicService.setPlaybackRate(1.5);
+    expect(musicService.playbackRate).toBe(1.5);
+
+    // Set 0.75x slow speed
+    musicService.setPlaybackRate(0.75);
+    expect(musicService.playbackRate).toBe(0.75);
+
+    // Cycle through speeds: 0.75 -> 1.0 -> 1.25 -> 1.5 -> 2.0 -> 0.75
+    musicService.cyclePlaybackRate();
+    expect(musicService.playbackRate).toBe(1.0);
+
+    musicService.cyclePlaybackRate();
+    expect(musicService.playbackRate).toBe(1.25);
+
+    // Subscriber notification receives playbackRate
+    let receivedRate = null;
+    const unsub = musicService.subscribe((state) => {
+      receivedRate = state.playbackRate;
+    });
+
+    musicService.setPlaybackRate(2.0);
+    expect(receivedRate).toBe(2.0);
+    unsub();
+  });
 });

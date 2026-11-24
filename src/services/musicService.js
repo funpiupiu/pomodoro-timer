@@ -26,6 +26,8 @@ class MusicService {
     this.currentTime = 0;
     this.repeatMode = 'all'; // 'all' | 'one' | 'off'
     this.isShuffled = false;
+    this.playbackRate = 1.0; // 0.75 | 1.0 | 1.25 | 1.5 | 2.0
+    this.availableRates = [0.75, 1.0, 1.25, 1.5, 2.0];
 
     // Synthesis playback refs
     this.playbackInterval = null;
@@ -53,6 +55,8 @@ class MusicService {
       volume: this.volume,
       repeatMode: this.repeatMode,
       isShuffled: this.isShuffled,
+      playbackRate: this.playbackRate,
+      availableRates: this.availableRates,
       playlist: this.playlist,
       selectedCategory: this.selectedCategory,
       allTracksCount: this.allTracks.length,
@@ -167,6 +171,24 @@ class MusicService {
     this.notify();
   }
 
+  setPlaybackRate(rate) {
+    const parsed = parseFloat(rate);
+    if (!isNaN(parsed) && parsed > 0) {
+      this.playbackRate = parsed;
+      if (this.isPlaying) {
+        this._stopMelodyLoop();
+        this._startMelodyLoop();
+      }
+      this.notify();
+    }
+  }
+
+  cyclePlaybackRate() {
+    const currentIdx = this.availableRates.indexOf(this.playbackRate);
+    const nextIdx = currentIdx !== -1 ? (currentIdx + 1) % this.availableRates.length : 1;
+    this.setPlaybackRate(this.availableRates[nextIdx]);
+  }
+
   startPlayback() {
     audioService.initContext();
     this.isPlaying = true;
@@ -186,11 +208,11 @@ class MusicService {
   _startMelodyLoop() {
     this._stopMelodyLoop();
 
-    // 1-second interval to update play progress
+    // 1-second interval to update play progress adjusted by playbackRate
     this.playbackInterval = setInterval(() => {
       if (!this.isPlaying) return;
 
-      this.currentTime += 1;
+      this.currentTime = Math.min(this.currentTrack.duration, this.currentTime + this.playbackRate);
       if (this.currentTime >= this.currentTrack.duration) {
         if (this.repeatMode === 'one') {
           this.currentTime = 0;
@@ -217,7 +239,8 @@ class MusicService {
     const melody = track.melody || [];
     if (melody.length === 0) return;
 
-    const beatDurationMs = (60 / (track.bpm || 60)) * 1000;
+    const effectiveBpm = (track.bpm || 60) * this.playbackRate;
+    const beatDurationMs = (60 / effectiveBpm) * 1000;
     let accumulatedDelay = 0;
 
     melody.forEach((noteItem) => {
