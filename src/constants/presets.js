@@ -1,0 +1,38 @@
+export const SESSION_PRESETS = [
+  {
+    id: 'classic',
+    name: 'Classic Pomodoro',
+    subtitle: 'Standard 25/5 rhythm',
+    focus: 25,
+    shortBreak: 5,
+    longBreak: 15,
+    interval: 4,
+  },
+  {
+    id: 'deep_sprint',
+    name: 'Deep Sprint',
+    subtitle: '50m deep coding & 10m rest',
+    focus: 50,
+    shortBreak: 10,
+    longBreak: 20,
+    interval: 3,
+  },
+  {
+    id: 'ultradian',
+    name: 'Ultradian Rhythm',
+    subtitle: '90m peak flow & 20m recharge',
+    focus: 90,
+    shortBreak: 20,
+    longBreak: 30,
+    interval: 2,
+  },
+  {
+    id: 'quick_blitz',
+    name: 'Quick Blitz',
+    subtitle: '15m high-energy sprint',
+    focus: 15,
+    shortBreak: 3,
+    longBreak: 10,
+    interval: 4,
+  },
+];
