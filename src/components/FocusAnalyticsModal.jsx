@@ -67,11 +67,13 @@ export default function FocusAnalyticsModal({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-fade-in">
+    <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 bg-black/75 backdrop-blur-md animate-fade-in">
       <div
-        className={`w-full max-w-lg p-6 rounded-3xl ${theme.surfaceClass} border shadow-2xl relative max-h-[90vh] overflow-y-auto`}
+        className={`w-full max-w-lg p-5 sm:p-6 rounded-t-3xl sm:rounded-3xl ${theme.surfaceClass} border border-white/10 shadow-2xl relative max-h-[88vh] sm:max-h-[90vh] overflow-y-auto pb-safe`}
         onClick={(e) => e.stopPropagation()}
       >
+        {/* Mobile Drag Indicator */}
+        <div className="w-10 h-1 rounded-full bg-white/20 mx-auto mb-2.5 sm:hidden flex-shrink-0" />
         {/* Header */}
         <div className="flex items-center justify-between pb-4 border-b border-white/10">
           <div className="flex items-center gap-2">

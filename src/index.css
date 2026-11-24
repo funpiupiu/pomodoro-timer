@@ -3,20 +3,45 @@
 @layer base {
   * {
     box-sizing: border-box;
+    -webkit-tap-highlight-color: transparent;
   }
   
-  body {
-    font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+  html, body {
     margin: 0;
     padding: 0;
     min-height: 100vh;
+    min-height: -webkit-fill-available;
+    width: 100%;
     overflow-x: hidden;
+  }
+
+  body {
+    font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+  }
+
+  button, input, select, textarea {
+    touch-action: manipulation;
   }
 
   /* Prevent numbers jittering during countdown */
   .tabular-nums {
     font-variant-numeric: tabular-nums;
   }
+}
+
+/* Safe area padding utilities for iOS Notch / Home Bar */
+.pb-safe {
+  padding-bottom: max(env(safe-area-inset-bottom, 16px), 16px);
+}
+
+.pt-safe {
+  padding-top: max(env(safe-area-inset-top, 12px), 12px);
+}
+
+/* Mobile tap target standard minimum 44px */
+.min-touch-target {
+  min-width: 44px;
+  min-height: 44px;
 }
 
 /* Custom serene breathing keyframe */

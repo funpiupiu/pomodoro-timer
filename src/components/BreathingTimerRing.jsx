@@ -65,8 +65,8 @@ export default function BreathingTimerRing({
               : 'opacity-20'
           }`}
           style={{
-            width: size + 40,
-            height: size + 40,
+            width: 'min(360px, 85vw)',
+            height: 'min(360px, 85vw)',
             background: isOvertime
               ? 'radial-gradient(circle, rgba(251, 191, 36, 0.3) 0%, rgba(0,0,0,0) 70%)'
               : `radial-gradient(circle, ${theme.glowColor} 0%, rgba(0,0,0,0) 70%)`,
@@ -74,9 +74,8 @@ export default function BreathingTimerRing({
         />
 
         <svg
-          width={size}
-          height={size}
-          className="transform -rotate-90 filter drop-shadow-[0_4px_24px_rgba(0,0,0,0.25)]"
+          viewBox="0 0 320 320"
+          className="w-[260px] h-[260px] sm:w-[320px] sm:h-[320px] transform -rotate-90 filter drop-shadow-[0_4px_24px_rgba(0,0,0,0.25)]"
         >
           {/* Background Track */}
           <circle
@@ -103,9 +102,9 @@ export default function BreathingTimerRing({
         </svg>
 
         {/* Inner Content inside Ring */}
-        <div className="absolute inset-0 flex flex-col items-center justify-center text-center p-6">
+        <div className="absolute inset-0 flex flex-col items-center justify-center text-center p-4 sm:p-6">
           {/* Cycle Dots */}
-          <div className="flex items-center gap-2 mb-3">
+          <div className="flex items-center gap-2 mb-2 sm:mb-3">
             {Array.from({ length: settings.longBreakInterval || 4 }).map((_, idx) => {
               const isFilled = idx < cycleCount;
               return (
@@ -126,7 +125,7 @@ export default function BreathingTimerRing({
 
           {/* Large Digital Time */}
           <div
-            className={`text-6xl sm:text-7xl font-light tracking-tight tabular-nums transition-colors duration-300 drop-shadow-sm font-['Space_Grotesk'] ${
+            className={`text-5xl sm:text-7xl font-light tracking-tight tabular-nums transition-colors duration-300 drop-shadow-sm font-['Space_Grotesk'] ${
               isOvertime ? 'text-amber-300' : ''
             }`}
             style={{ color: isOvertime ? '#fbbf24' : theme.accentColor }}
@@ -156,12 +155,12 @@ export default function BreathingTimerRing({
       </div>
 
       {/* Control Buttons */}
-      <div className="flex items-center gap-4 mt-8">
+      <div className="flex items-center gap-3 sm:gap-4 mt-6 sm:mt-8">
         {/* Reset button */}
         <button
           onClick={resetTimer}
           title="Reset timer (R)"
-          className={`p-3 rounded-full transition-all duration-200 cursor-pointer ${theme.surfaceSubtle} text-white/70 hover:text-white hover:scale-105 active:scale-95`}
+          className={`w-11 h-11 rounded-full flex items-center justify-center transition-all duration-200 cursor-pointer ${theme.surfaceSubtle} text-white/70 hover:text-white hover:scale-105 active:scale-95`}
         >
           <RotateCcw className="w-4 h-4" />
         </button>
@@ -171,7 +170,7 @@ export default function BreathingTimerRing({
           <button
             onClick={finalizeFlow}
             title="Complete Flow Session and take a rest"
-            className="px-6 py-3.5 rounded-full font-medium text-sm flex items-center gap-2 shadow-lg transition-all duration-300 cursor-pointer transform hover:scale-105 active:scale-95 bg-amber-400 hover:bg-amber-300 text-black shadow-amber-500/20"
+            className="px-6 py-3.5 min-h-[44px] rounded-full font-medium text-sm flex items-center gap-2 shadow-lg transition-all duration-300 cursor-pointer transform hover:scale-105 active:scale-95 bg-amber-400 hover:bg-amber-300 text-black shadow-amber-500/20"
           >
             <CheckCircle2 className="w-4 h-4" />
             <span>Wrap Up Flow</span>
@@ -180,7 +179,7 @@ export default function BreathingTimerRing({
           <button
             onClick={toggleTimer}
             title={isRunning ? 'Pause (Space)' : 'Start (Space)'}
-            className={`px-8 py-3.5 rounded-full font-medium text-sm flex items-center gap-2 shadow-lg transition-all duration-300 cursor-pointer transform hover:scale-105 active:scale-95 ${theme.buttonPrimary}`}
+            className={`px-7 sm:px-8 py-3.5 min-h-[44px] rounded-full font-medium text-sm flex items-center gap-2 shadow-lg transition-all duration-300 cursor-pointer transform hover:scale-105 active:scale-95 ${theme.buttonPrimary}`}
             style={{
               boxShadow: `0 8px 24px ${theme.glowColor}`,
             }}
@@ -203,7 +202,7 @@ export default function BreathingTimerRing({
         <button
           onClick={skipToNext}
           title="Skip session"
-          className={`p-3 rounded-full transition-all duration-200 cursor-pointer ${theme.surfaceSubtle} text-white/70 hover:text-white hover:scale-105 active:scale-95`}
+          className={`w-11 h-11 rounded-full flex items-center justify-center transition-all duration-200 cursor-pointer ${theme.surfaceSubtle} text-white/70 hover:text-white hover:scale-105 active:scale-95`}
         >
           <SkipForward className="w-4 h-4" />
         </button>

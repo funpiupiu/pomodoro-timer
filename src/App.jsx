@@ -204,7 +204,7 @@ export default function App() {
 
   return (
     <div
-      className={`min-h-screen bg-gradient-to-br ${currentTheme.bgClass} ${currentTheme.textPrimary} transition-all duration-700 flex flex-col justify-between p-4 sm:p-6 relative overflow-x-hidden`}
+      className={`min-h-screen bg-gradient-to-br ${currentTheme.bgClass} ${currentTheme.textPrimary} transition-all duration-700 flex flex-col justify-between p-3 sm:p-6 pb-safe pt-safe relative overflow-x-hidden`}
     >
       {/* Background Ambient Glow Circles */}
       <div
@@ -217,116 +217,152 @@ export default function App() {
       />
 
       {/* TOP HEADER (Hidden in Zen Mode) */}
+      {/* TOP HEADER (Hidden in Zen Mode) */}
       {!isZenMode && (
-        <header className="relative z-10 w-full max-w-4xl mx-auto flex items-center justify-between pb-4 border-b border-white/5">
-          {/* Logo & Brand */}
-          <div className="flex items-center gap-2.5">
-            <div
-              className="w-8 h-8 rounded-full flex items-center justify-center shadow-lg transition-transform hover:scale-105"
-              style={{ backgroundColor: currentTheme.accentColor }}
-            >
-              <Sparkles className="w-4 h-4 text-black" />
-            </div>
-            <div>
-              <div className="flex items-center gap-2">
-                <h1 className="text-base font-semibold tracking-tight text-white m-0 p-0">
-                  ZenFocus
-                </h1>
-                <span className="text-[10px] px-2 py-0.5 rounded-full bg-white/10 font-mono text-white/70">
-                  {currentTheme.name}
-                </span>
-                {timer.isOvertime && (
-                  <span className="text-[10px] px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-300 font-semibold animate-pulse border border-amber-500/30">
-                    Flow Active
-                  </span>
-                )}
+        <header className="relative z-10 w-full max-w-4xl mx-auto flex flex-col pb-3 sm:pb-4 border-b border-white/5 gap-2.5">
+          {/* Main Top Row */}
+          <div className="flex items-center justify-between w-full">
+            {/* Logo & Brand */}
+            <div className="flex items-center gap-2 sm:gap-2.5 min-w-0">
+              <div
+                className="w-7 h-7 sm:w-8 sm:h-8 rounded-full flex items-center justify-center shadow-lg transition-transform hover:scale-105 flex-shrink-0"
+                style={{ backgroundColor: currentTheme.accentColor }}
+              >
+                <Sparkles className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-black" />
               </div>
-              <p className="text-[11px] text-white/50 hidden sm:block">
-                Aesthetic Pomodoro & Mindful Flow OS
-              </p>
+              <div className="min-w-0">
+                <div className="flex items-center gap-1.5 sm:gap-2 flex-wrap">
+                  <h1 className="text-sm sm:text-base font-semibold tracking-tight text-white m-0 p-0">
+                    ZenFocus
+                  </h1>
+                  <span className="text-[9px] sm:text-[10px] px-1.5 sm:px-2 py-0.5 rounded-full bg-white/10 font-mono text-white/70">
+                    {currentTheme.name}
+                  </span>
+                  {timer.isOvertime && (
+                    <span className="text-[9px] sm:text-[10px] px-1.5 sm:px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-300 font-semibold animate-pulse border border-amber-500/30">
+                      Flow
+                    </span>
+                  )}
+                </div>
+                <p className="text-[10px] sm:text-[11px] text-white/50 hidden sm:block">
+                  Aesthetic Pomodoro & Mindful Flow OS
+                </p>
+              </div>
+            </div>
+
+            {/* Top Right Actions */}
+            <div className="flex items-center gap-1.5 sm:gap-2">
+              {/* Desktop Ambient Sound Dock */}
+              <div className="hidden md:block">
+                <AmbientSoundBar
+                  settings={settings}
+                  onUpdateSettings={handleUpdateSettings}
+                  onOpenMixer={() => setIsMixerOpen(true)}
+                  theme={currentTheme}
+                />
+              </div>
+
+              {/* Music Lounge Vinyl Button */}
+              <button
+                onClick={() => setIsMusicOpen(true)}
+                title={
+                  musicState.isPlaying
+                    ? `Playing: ${musicState.currentTrack.title} (Press M)`
+                    : 'Mindful Music Lounge (Press M)'
+                }
+                className={`flex items-center gap-1 px-2.5 sm:px-3 py-1.5 rounded-full border transition-all cursor-pointer shadow-sm ${
+                  musicState.isPlaying
+                    ? 'bg-amber-400/20 text-amber-300 border-amber-400/40 shadow-amber-400/10'
+                    : 'bg-white/5 hover:bg-white/10 border-white/5 text-white/70 hover:text-white'
+                }`}
+              >
+                <Disc3
+                  className={`w-3.5 h-3.5 sm:w-4 sm:h-4 ${musicState.isPlaying ? 'animate-[spin_4s_linear_infinite]' : ''}`}
+                  style={{ color: musicState.isPlaying ? '#fbbf24' : 'currentColor' }}
+                />
+                <span className="text-xs font-medium">
+                  {musicState.isPlaying ? 'Music' : 'Lounge'}
+                </span>
+              </button>
+
+              {/* Desktop Knowledge Log button */}
+              <button
+                onClick={() => setIsKnowledgeLogOpen(true)}
+                title="Knowledge Journal (Press K)"
+                className="hidden md:flex items-center gap-1 px-2.5 py-1.5 rounded-full bg-white/5 hover:bg-white/10 border border-white/5 transition-all text-white/80 hover:text-white cursor-pointer"
+              >
+                <BookOpen className="w-3.5 h-3.5 text-amber-300" />
+                <span className="text-xs font-mono">{knowledgeLogs.length}</span>
+              </button>
+
+              {/* Desktop Mindful Breathing Guide button */}
+              <button
+                onClick={() => setIsBreathingOpen(true)}
+                title="Box Breathing Guide (Press B)"
+                className="hidden md:flex p-2 rounded-full bg-white/5 hover:bg-white/10 border border-white/5 transition-all text-white/70 hover:text-white cursor-pointer"
+              >
+                <Wind className="w-4 h-4" />
+              </button>
+
+              {/* Streak & Analytics button */}
+              <button
+                onClick={() => setIsAnalyticsOpen(true)}
+                title="Focus Insights & Heatmap"
+                className="flex items-center gap-1 px-2 sm:px-2.5 py-1.5 rounded-full bg-white/5 hover:bg-white/10 border border-white/5 transition-all text-xs font-medium cursor-pointer"
+              >
+                <Flame className="w-3.5 h-3.5 text-orange-400" />
+                <span className="font-mono text-[11px] sm:text-xs">{stats.currentStreak || 0}d</span>
+              </button>
+
+              {/* Settings button */}
+              <button
+                onClick={() => setIsSettingsOpen(true)}
+                title="Settings & Presets"
+                className="p-1.5 sm:p-2 rounded-full bg-white/5 hover:bg-white/10 border border-white/5 transition-all text-white/70 hover:text-white cursor-pointer"
+              >
+                <Settings2 className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+              </button>
+
+              {/* Zen Fullscreen Toggle */}
+              <button
+                onClick={() => setIsZenMode(true)}
+                title="Zen Mode (Press F)"
+                className="p-1.5 sm:p-2 rounded-full bg-white/5 hover:bg-white/10 border border-white/5 transition-all text-white/70 hover:text-white cursor-pointer"
+              >
+                <Maximize2 className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+              </button>
             </div>
           </div>
 
-          {/* Action Dock */}
-          <div className="flex items-center gap-2 sm:gap-2.5">
-            {/* Ambient Sound Dock */}
-            <div className="hidden md:block">
-              <AmbientSoundBar
-                settings={settings}
-                onUpdateSettings={handleUpdateSettings}
-                onOpenMixer={() => setIsMixerOpen(true)}
-                theme={currentTheme}
-              />
-            </div>
-
-            {/* Music Lounge Vinyl Button */}
+          {/* Secondary Mobile Quick Toolbar (Phones & Small Tablets) */}
+          <div className="flex md:hidden items-center justify-between gap-1.5 overflow-x-auto scrollbar-none pt-1">
             <button
-              onClick={() => setIsMusicOpen(true)}
-              title={
-                musicState.isPlaying
-                  ? `Playing: ${musicState.currentTrack.title} (Press M)`
-                  : 'Mindful Music Lounge - Baroque 60 BPM & Classical (Press M)'
-              }
-              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full border transition-all cursor-pointer shadow-sm ${
-                musicState.isPlaying
-                  ? 'bg-amber-400/20 text-amber-300 border-amber-400/40 shadow-amber-400/10'
-                  : 'bg-white/5 hover:bg-white/10 border-white/5 text-white/70 hover:text-white'
-              }`}
+              onClick={() => setIsMixerOpen(true)}
+              className="flex-1 flex items-center justify-center gap-1 px-2.5 py-1.5 rounded-xl bg-white/5 hover:bg-white/10 border border-white/5 text-[11px] text-white/80 whitespace-nowrap cursor-pointer transition-all"
             >
-              <Disc3
-                className={`w-4 h-4 ${musicState.isPlaying ? 'animate-[spin_4s_linear_infinite]' : ''}`}
-                style={{ color: musicState.isPlaying ? '#fbbf24' : 'currentColor' }}
-              />
-              <span className="text-xs font-medium hidden sm:inline">
-                {musicState.isPlaying ? 'Music' : 'Lounge'}
-              </span>
+              <Volume2 className="w-3 h-3 text-emerald-400" />
+              <span>Âm thanh</span>
             </button>
-
-            {/* Knowledge Log button */}
-            <button
-              onClick={() => setIsKnowledgeLogOpen(true)}
-              title="Knowledge Journal (Press K)"
-              className="flex items-center gap-1 px-2.5 py-2 rounded-full bg-white/5 hover:bg-white/10 border border-white/5 transition-all text-white/80 hover:text-white cursor-pointer"
-            >
-              <BookOpen className="w-3.5 h-3.5 text-amber-300" />
-              <span className="text-xs font-mono hidden sm:inline">{knowledgeLogs.length}</span>
-            </button>
-
-            {/* Mindful Breathing Guide button */}
             <button
               onClick={() => setIsBreathingOpen(true)}
-              title="Box Breathing Guide (Press B)"
-              className="p-2 rounded-full bg-white/5 hover:bg-white/10 border border-white/5 transition-all text-white/70 hover:text-white cursor-pointer"
+              className="flex-1 flex items-center justify-center gap-1 px-2.5 py-1.5 rounded-xl bg-white/5 hover:bg-white/10 border border-white/5 text-[11px] text-white/80 whitespace-nowrap cursor-pointer transition-all"
             >
-              <Wind className="w-4 h-4" />
+              <Wind className="w-3 h-3 text-sky-400" />
+              <span>Hơi thở</span>
             </button>
-
-            {/* Streak & Analytics button */}
+            <button
+              onClick={() => setIsKnowledgeLogOpen(true)}
+              className="flex-1 flex items-center justify-center gap-1 px-2.5 py-1.5 rounded-xl bg-white/5 hover:bg-white/10 border border-white/5 text-[11px] text-white/80 whitespace-nowrap cursor-pointer transition-all"
+            >
+              <BookOpen className="w-3 h-3 text-amber-300" />
+              <span>Nhật ký ({knowledgeLogs.length})</span>
+            </button>
             <button
               onClick={() => setIsAnalyticsOpen(true)}
-              title="Focus Insights & Heatmap"
-              className="flex items-center gap-1.5 px-3 py-2 rounded-full bg-white/5 hover:bg-white/10 border border-white/5 transition-all text-xs font-medium cursor-pointer"
+              className="flex-1 flex items-center justify-center gap-1 px-2.5 py-1.5 rounded-xl bg-white/5 hover:bg-white/10 border border-white/5 text-[11px] text-white/80 whitespace-nowrap cursor-pointer transition-all"
             >
-              <Flame className="w-3.5 h-3.5 text-orange-400" />
-              <span className="font-mono">{stats.currentStreak || 0}d</span>
-            </button>
-
-            {/* Settings button */}
-            <button
-              onClick={() => setIsSettingsOpen(true)}
-              title="Settings & Presets"
-              className="p-2 rounded-full bg-white/5 hover:bg-white/10 border border-white/5 transition-all text-white/70 hover:text-white cursor-pointer"
-            >
-              <Settings2 className="w-4 h-4" />
-            </button>
-
-            {/* Zen Fullscreen Toggle */}
-            <button
-              onClick={() => setIsZenMode(true)}
-              title="Zen Mode (Press F)"
-              className="p-2 rounded-full bg-white/5 hover:bg-white/10 border border-white/5 transition-all text-white/70 hover:text-white cursor-pointer"
-            >
-              <Maximize2 className="w-4 h-4" />
+              <Flame className="w-3 h-3 text-orange-400" />
+              <span>Thống kê</span>
             </button>
           </div>
         </header>

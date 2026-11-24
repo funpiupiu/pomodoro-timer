@@ -123,38 +123,41 @@ export default function ZenMusicPlayerModal({
   const effectiveBpm = Math.round((currentTrack?.bpm || 60) * (playbackRate || 1.0));
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-md animate-fade-in">
+    <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 bg-black/75 backdrop-blur-md animate-fade-in">
       <div
-        className={`w-full max-w-lg p-6 rounded-3xl ${theme.surfaceClass} border shadow-2xl relative max-h-[92vh] overflow-y-auto flex flex-col`}
+        className={`w-full max-w-lg p-4 sm:p-6 rounded-t-3xl sm:rounded-3xl ${theme.surfaceClass} border border-white/10 shadow-2xl relative max-h-[90vh] sm:max-h-[92vh] overflow-y-auto flex flex-col pb-safe`}
         onClick={(e) => e.stopPropagation()}
       >
+        {/* Mobile Drag Indicator */}
+        <div className="w-10 h-1 rounded-full bg-white/20 mx-auto mb-2.5 sm:hidden flex-shrink-0" />
+
         {/* Header */}
         <div className="flex items-center justify-between pb-3 border-b border-white/10 mb-3">
-          <div className="flex items-center gap-2.5">
-            <div className="p-2 rounded-xl bg-amber-400/10 text-amber-300 border border-amber-400/20">
+          <div className="flex items-center gap-2 sm:gap-2.5">
+            <div className="p-1.5 sm:p-2 rounded-xl bg-amber-400/10 text-amber-300 border border-amber-400/20">
               <Disc3
-                className="w-5 h-5"
+                className="w-4 h-4 sm:w-5 sm:h-5"
                 style={{
                   animation: isPlaying ? `spin ${spinDuration} linear infinite` : 'none',
                 }}
               />
             </div>
             <div>
-              <h2 className="text-base font-semibold text-white tracking-tight">
+              <h2 className="text-sm sm:text-base font-semibold text-white tracking-tight">
                 ZenFocus Mindful Music Lounge
               </h2>
-              <p className="text-[11px] text-white/50">
-                Baroque 60 BPM · Cổ Điển Tĩnh Lặng · Nhạc Hoa Chill
+              <p className="text-[10px] sm:text-[11px] text-white/50">
+                Baroque 60 BPM · Cổ Điển · Nhạc Hoa Chill
               </p>
             </div>
           </div>
 
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-1.5 sm:gap-2">
             {/* Tab switch */}
-            <div className="flex items-center gap-1 p-0.5 rounded-full bg-black/30 border border-white/5 text-xs">
+            <div className="flex items-center gap-1 p-0.5 rounded-full bg-black/30 border border-white/5 text-[11px] sm:text-xs">
               <button
                 onClick={() => setActiveTab('player')}
-                className={`px-3 py-1 rounded-full transition-all cursor-pointer ${
+                className={`px-2.5 sm:px-3 py-1 rounded-full transition-all cursor-pointer ${
                   activeTab === 'player' ? theme.pillActive : 'text-white/50 hover:text-white'
                 }`}
               >
@@ -162,7 +165,7 @@ export default function ZenMusicPlayerModal({
               </button>
               <button
                 onClick={() => setActiveTab('playlist')}
-                className={`px-3 py-1 rounded-full transition-all cursor-pointer ${
+                className={`px-2.5 sm:px-3 py-1 rounded-full transition-all cursor-pointer ${
                   activeTab === 'playlist' ? theme.pillActive : 'text-white/50 hover:text-white'
                 }`}
               >
@@ -206,9 +209,9 @@ export default function ZenMusicPlayerModal({
 
         {/* TAB: VINYL PLAYER */}
         {activeTab === 'player' && (
-          <div className="flex flex-col items-center py-2 animate-fade-in">
+          <div className="flex flex-col items-center py-1 sm:py-2 animate-fade-in">
             {/* Rotating Vinyl Record Graphic with Dynamic Speed */}
-            <div className="relative my-3 flex items-center justify-center w-52 h-52 select-none">
+            <div className="relative my-2 sm:my-3 flex items-center justify-center w-40 h-40 sm:w-52 sm:h-52 select-none">
               {/* Outer Vinyl Glow */}
               <div
                 className={`absolute inset-0 rounded-full filter blur-xl opacity-25 transition-all duration-1000 ${
@@ -219,7 +222,7 @@ export default function ZenMusicPlayerModal({
 
               {/* Vinyl Disc Body */}
               <div
-                className="w-48 h-48 rounded-full bg-[#121214] border-4 border-[#222225] shadow-2xl relative flex items-center justify-center"
+                className="w-36 h-36 sm:w-48 sm:h-48 rounded-full bg-[#121214] border-4 border-[#222225] shadow-2xl relative flex items-center justify-center"
                 style={{
                   animation: isPlaying ? `spin ${spinDuration} linear infinite` : 'none',
                   backgroundImage:
@@ -228,20 +231,20 @@ export default function ZenMusicPlayerModal({
               >
                 {/* Center Record Label */}
                 <div
-                  className="w-20 h-20 rounded-full shadow-inner flex flex-col items-center justify-center p-2 text-center border-2 border-white/20 transition-colors duration-500"
+                  className="w-16 h-16 sm:w-20 sm:h-20 rounded-full shadow-inner flex flex-col items-center justify-center p-1.5 sm:p-2 text-center border-2 border-white/20 transition-colors duration-500"
                   style={{ backgroundColor: currentTrack.coverColor }}
                 >
                   {getBadgeIcon(currentTrack.category)}
-                  <span className="text-[8px] font-bold text-white uppercase tracking-wider truncate max-w-[65px] mt-0.5">
+                  <span className="text-[7px] sm:text-[8px] font-bold text-white uppercase tracking-wider truncate max-w-[55px] sm:max-w-[65px] mt-0.5">
                     {getCategoryLabel(currentTrack.category)}
                   </span>
-                  <span className="text-[7px] text-white/70 font-mono tracking-tighter">
+                  <span className="text-[6.5px] sm:text-[7px] text-white/70 font-mono tracking-tighter">
                     {effectiveBpm} BPM
                   </span>
                 </div>
 
                 {/* Spindle hole */}
-                <div className="absolute w-3 h-3 rounded-full bg-[#0a0a0c] border border-white/30" />
+                <div className="absolute w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full bg-[#0a0a0c] border border-white/30" />
               </div>
             </div>
 

@@ -96,7 +96,7 @@ export default function ZenTaskAndNotesCard({
 
   return (
     <div
-      className={`w-full max-w-md mx-auto p-5 rounded-3xl ${theme.surfaceClass} shadow-xl border transition-all duration-300`}
+      className={`w-full max-w-md mx-auto p-4 sm:p-5 rounded-3xl ${theme.surfaceClass} shadow-xl border transition-all duration-300`}
     >
       {/* Header with Dual Tabs */}
       <div className="flex items-center justify-between pb-3 border-b border-white/10 mb-4">

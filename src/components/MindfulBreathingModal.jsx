@@ -81,11 +81,13 @@ export default function MindfulBreathingModal({
   }
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-md animate-fade-in">
+    <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 bg-black/75 backdrop-blur-md animate-fade-in">
       <div
-        className={`w-full max-w-md p-6 rounded-3xl ${theme.surfaceClass} border shadow-2xl relative flex flex-col items-center text-center`}
+        className={`w-full max-w-md p-5 sm:p-6 rounded-t-3xl sm:rounded-3xl ${theme.surfaceClass} border border-white/10 shadow-2xl relative flex flex-col items-center text-center pb-safe`}
         onClick={(e) => e.stopPropagation()}
       >
+        {/* Mobile Drag Indicator */}
+        <div className="w-10 h-1 rounded-full bg-white/20 mx-auto mb-2 sm:hidden flex-shrink-0" />
         {/* Header */}
         <div className="w-full flex items-center justify-between pb-4 border-b border-white/10">
           <div className="flex items-center gap-2">

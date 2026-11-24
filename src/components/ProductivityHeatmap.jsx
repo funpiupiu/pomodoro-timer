@@ -51,7 +51,7 @@ export default function ProductivityHeatmap({ stats, theme }) {
       </div>
 
       {/* Heatmap Grid */}
-      <div className="overflow-x-auto pb-1">
+      <div className="overflow-x-auto pb-2 touch-pan-x scrollbar-thin">
         <div className="flex items-center gap-1.5 min-w-[280px]">
           {weeks.map((week, wIdx) => (
             <div key={wIdx} className="flex flex-col gap-1.5">
