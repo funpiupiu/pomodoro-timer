@@ -31,7 +31,12 @@ export default function SettingsModal({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 bg-black/75 backdrop-blur-md animate-fade-in">
+    <div
+      role="dialog"
+      aria-modal="true"
+      className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 bg-black/75 backdrop-blur-md animate-fade-in"
+      onClick={onClose}
+    >
       <div
         className={`w-full max-w-lg p-5 sm:p-6 rounded-t-3xl sm:rounded-3xl ${theme.surfaceClass} border border-white/10 shadow-2xl relative max-h-[88vh] sm:max-h-[90vh] overflow-y-auto pb-safe`}
         onClick={(e) => e.stopPropagation()}
@@ -58,7 +63,7 @@ export default function SettingsModal({
             <Sparkles className="w-3.5 h-3.5 text-amber-400" />
             <span>Rhythm Presets</span>
           </div>
-          <div className="grid grid-cols-2 gap-2">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
             {SESSION_PRESETS.map((p) => {
               const isSelected = settings.focusDuration === p.focus && settings.shortBreakDuration === p.shortBreak;
               return (
@@ -85,38 +90,38 @@ export default function SettingsModal({
             <Sliders className="w-3.5 h-3.5" style={{ color: theme.accentColor }} />
             <span>Custom Durations (Minutes)</span>
           </div>
-          <div className="grid grid-cols-3 gap-3">
-            <div className="p-3 rounded-2xl bg-white/5 border border-white/5">
-              <label className="text-[11px] text-white/60 block mb-1">Focus</label>
+          <div className="grid grid-cols-3 gap-2 sm:gap-3">
+            <div className="p-2.5 sm:p-3 rounded-2xl bg-white/5 border border-white/5">
+              <label className="text-[10px] sm:text-[11px] text-white/60 block mb-1 truncate">Focus</label>
               <input
                 type="number"
                 min="1"
                 max="120"
                 value={settings.focusDuration}
                 onChange={(e) => handleChange('focusDuration', Math.max(1, parseInt(e.target.value) || 25))}
-                className="w-full text-lg font-semibold bg-transparent text-white focus:outline-none"
+                className="w-full text-base sm:text-lg font-semibold bg-transparent text-white focus:outline-none"
               />
             </div>
-            <div className="p-3 rounded-2xl bg-white/5 border border-white/5">
-              <label className="text-[11px] text-white/60 block mb-1">Short Break</label>
+            <div className="p-2.5 sm:p-3 rounded-2xl bg-white/5 border border-white/5">
+              <label className="text-[10px] sm:text-[11px] text-white/60 block mb-1 truncate">Short Break</label>
               <input
                 type="number"
                 min="1"
                 max="30"
                 value={settings.shortBreakDuration}
                 onChange={(e) => handleChange('shortBreakDuration', Math.max(1, parseInt(e.target.value) || 5))}
-                className="w-full text-lg font-semibold bg-transparent text-white focus:outline-none"
+                className="w-full text-base sm:text-lg font-semibold bg-transparent text-white focus:outline-none"
               />
             </div>
-            <div className="p-3 rounded-2xl bg-white/5 border border-white/5">
-              <label className="text-[11px] text-white/60 block mb-1">Long Break</label>
+            <div className="p-2.5 sm:p-3 rounded-2xl bg-white/5 border border-white/5">
+              <label className="text-[10px] sm:text-[11px] text-white/60 block mb-1 truncate">Long Break</label>
               <input
                 type="number"
                 min="1"
                 max="60"
                 value={settings.longBreakDuration}
                 onChange={(e) => handleChange('longBreakDuration', Math.max(1, parseInt(e.target.value) || 15))}
-                className="w-full text-lg font-semibold bg-transparent text-white focus:outline-none"
+                className="w-full text-base sm:text-lg font-semibold bg-transparent text-white focus:outline-none"
               />
             </div>
           </div>
@@ -128,7 +133,7 @@ export default function SettingsModal({
             <Palette className="w-3.5 h-3.5" style={{ color: theme.accentColor }} />
             <span>Zen Aesthetic Theme</span>
           </div>
-          <div className="grid grid-cols-2 gap-2.5">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
             {Object.values(THEMES).map((thm) => {
               const isSelected = settings.theme === thm.id;
               return (
@@ -156,11 +161,11 @@ export default function SettingsModal({
         </div>
 
         {/* 4. Automation & Deep Learning Toggles */}
-        <div className="my-5 pt-4 border-t border-white/10 space-y-3">
-          <div className="flex items-center justify-between">
-            <div>
+        <div className="my-5 pt-4 border-t border-white/10 space-y-3.5">
+          <div className="flex items-center justify-between gap-3">
+            <div className="min-w-0">
               <div className="flex items-center gap-1.5 text-xs font-medium text-white">
-                <BookOpen className="w-3.5 h-3.5 text-amber-300" />
+                <BookOpen className="w-3.5 h-3.5 text-amber-300 flex-shrink-0" />
                 <span>Post-Session Feynman Prompt</span>
               </div>
               <div className="text-[11px] text-white/50">Show 60s learning synthesis dialog after each focus session</div>
@@ -169,14 +174,14 @@ export default function SettingsModal({
               type="checkbox"
               checked={settings.feynmanPromptEnabled ?? true}
               onChange={(e) => handleChange('feynmanPromptEnabled', e.target.checked)}
-              className="w-4 h-4 rounded accent-emerald-500 cursor-pointer"
+              className="w-4 h-4 rounded accent-emerald-500 cursor-pointer flex-shrink-0"
             />
           </div>
 
-          <div className="flex items-center justify-between">
-            <div>
+          <div className="flex items-center justify-between gap-3">
+            <div className="min-w-0">
               <div className="flex items-center gap-1.5 text-xs font-medium text-white">
-                <Zap className="w-3.5 h-3.5 text-amber-400" />
+                <Zap className="w-3.5 h-3.5 text-amber-400 flex-shrink-0" />
                 <span>Flow Mode (Overtime Counting)</span>
               </div>
               <div className="text-[11px] text-white/50">Allow timer to keep counting positive when session ends</div>
@@ -185,12 +190,12 @@ export default function SettingsModal({
               type="checkbox"
               checked={settings.flowMode}
               onChange={(e) => handleChange('flowMode', e.target.checked)}
-              className="w-4 h-4 rounded accent-emerald-500 cursor-pointer"
+              className="w-4 h-4 rounded accent-emerald-500 cursor-pointer flex-shrink-0"
             />
           </div>
 
-          <div className="flex items-center justify-between">
-            <div>
+          <div className="flex items-center justify-between gap-3">
+            <div className="min-w-0">
               <div className="text-xs font-medium text-white">Auto-start Breaks</div>
               <div className="text-[11px] text-white/50">Automatically begin rest when focus ends</div>
             </div>
@@ -198,12 +203,12 @@ export default function SettingsModal({
               type="checkbox"
               checked={settings.autoStartBreaks}
               onChange={(e) => handleChange('autoStartBreaks', e.target.checked)}
-              className="w-4 h-4 rounded accent-emerald-500 cursor-pointer"
+              className="w-4 h-4 rounded accent-emerald-500 cursor-pointer flex-shrink-0"
             />
           </div>
 
-          <div className="flex items-center justify-between">
-            <div>
+          <div className="flex items-center justify-between gap-3">
+            <div className="min-w-0">
               <div className="text-xs font-medium text-white">Auto-start Pomodoros</div>
               <div className="text-[11px] text-white/50">Automatically begin next focus when break ends</div>
             </div>
@@ -211,12 +216,12 @@ export default function SettingsModal({
               type="checkbox"
               checked={settings.autoStartPomodoros}
               onChange={(e) => handleChange('autoStartPomodoros', e.target.checked)}
-              className="w-4 h-4 rounded accent-emerald-500 cursor-pointer"
+              className="w-4 h-4 rounded accent-emerald-500 cursor-pointer flex-shrink-0"
             />
           </div>
 
-          <div className="flex items-center justify-between">
-            <div>
+          <div className="flex items-center justify-between gap-3">
+            <div className="min-w-0">
               <div className="text-xs font-medium text-white">Tibetan Bell & Chimes</div>
               <div className="text-[11px] text-white/50">Synthesized 432Hz singing bowl sound</div>
             </div>
@@ -224,12 +229,12 @@ export default function SettingsModal({
               type="checkbox"
               checked={settings.soundEffects}
               onChange={(e) => handleChange('soundEffects', e.target.checked)}
-              className="w-4 h-4 rounded accent-emerald-500 cursor-pointer"
+              className="w-4 h-4 rounded accent-emerald-500 cursor-pointer flex-shrink-0"
             />
           </div>
 
-          <div className="flex items-center justify-between">
-            <div>
+          <div className="flex items-center justify-between gap-3">
+            <div className="min-w-0">
               <div className="text-xs font-medium text-white">Browser Notifications</div>
               <div className="text-[11px] text-white/50">Alert when tab is minimized or hidden</div>
             </div>
@@ -237,7 +242,7 @@ export default function SettingsModal({
               type="checkbox"
               checked={settings.notifications}
               onChange={(e) => handleChange('notifications', e.target.checked)}
-              className="w-4 h-4 rounded accent-emerald-500 cursor-pointer"
+              className="w-4 h-4 rounded accent-emerald-500 cursor-pointer flex-shrink-0"
             />
           </div>
         </div>
@@ -248,7 +253,7 @@ export default function SettingsModal({
             <Keyboard className="w-3.5 h-3.5" style={{ color: theme.accentColor }} />
             <span>Shortcuts</span>
           </div>
-          <div className="grid grid-cols-2 gap-2 text-xs text-white/60">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs text-white/60">
             <div className="flex items-center justify-between p-2 rounded-xl bg-white/5">
               <span>Start / Pause</span>
               <kbd className="px-2 py-0.5 rounded bg-black/40 text-white font-mono text-[11px]">Space</kbd>

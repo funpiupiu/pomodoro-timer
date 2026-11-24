@@ -96,7 +96,7 @@ export default function ZenTaskAndNotesCard({
 
   return (
     <div
-      className={`w-full max-w-md mx-auto p-4 sm:p-5 rounded-3xl ${theme.surfaceClass} shadow-xl border transition-all duration-300`}
+      className={`w-full max-w-md lg:max-w-none mx-auto p-4 sm:p-5 rounded-3xl ${theme.surfaceClass} shadow-xl border transition-all duration-300`}
     >
       {/* Header with Dual Tabs */}
       <div className="flex items-center justify-between pb-3 border-b border-white/10 mb-4">
@@ -235,7 +235,7 @@ export default function ZenTaskAndNotesCard({
                           if (settings.soundEffects) audioService.playClick();
                           onDeleteTask(task.id);
                         }}
-                        className="opacity-0 group-hover:opacity-100 p-1 rounded-md text-white/40 hover:text-rose-400 hover:bg-white/10 transition-all cursor-pointer"
+                        className="opacity-75 sm:opacity-0 sm:group-hover:opacity-100 p-1.5 rounded-lg text-white/50 hover:text-rose-400 hover:bg-white/10 transition-all cursor-pointer"
                         title="Delete task"
                       >
                         <Trash2 className="w-3.5 h-3.5" />
@@ -279,7 +279,7 @@ export default function ZenTaskAndNotesCard({
                 ))}
               </div>
 
-              <div className="flex items-center justify-between mt-3">
+              <div className="flex flex-wrap items-center justify-between gap-2 mt-3">
                 <div className="flex items-center gap-2 text-xs text-white/70">
                   <span>Est. Pomodoros:</span>
                   <input
@@ -346,8 +346,8 @@ export default function ZenTaskAndNotesCard({
           />
 
           {/* Formatting Helpers */}
-          <div className="flex items-center justify-between mt-2 pt-2 border-t border-white/5">
-            <div className="flex items-center gap-1.5 text-[11px] text-white/60">
+          <div className="flex flex-wrap items-center justify-between gap-2 mt-2 pt-2 border-t border-white/5">
+            <div className="flex flex-wrap items-center gap-1.5 text-[11px] text-white/60">
               <button
                 type="button"
                 onClick={() => insertText('- ')}

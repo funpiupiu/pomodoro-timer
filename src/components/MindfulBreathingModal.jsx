@@ -124,7 +124,7 @@ export default function MindfulBreathingModal({
         </div>
 
         {/* Breathing Mandala Visualization */}
-        <div className="relative my-8 flex items-center justify-center w-64 h-64">
+        <div className="relative my-4 sm:my-8 flex items-center justify-center w-48 h-48 sm:w-64 sm:h-64">
           {/* Subtle Outer Halo Ripples */}
           <div
             className="absolute inset-0 rounded-full transition-transform duration-1000 ease-in-out opacity-20 filter blur-xl"
@@ -136,11 +136,11 @@ export default function MindfulBreathingModal({
 
           {/* Concentric Decorative Rings */}
           <div
-            className={`w-52 h-52 rounded-full border-2 border-dashed transition-all duration-1000 ease-in-out flex items-center justify-center ${scaleClass}`}
+            className={`w-40 h-40 sm:w-52 sm:h-52 rounded-full border-2 border-dashed transition-all duration-1000 ease-in-out flex items-center justify-center ${scaleClass}`}
             style={{ borderColor: theme.accentColor }}
           >
             <div
-              className="w-40 h-40 rounded-full border border-white/20 transition-all duration-1000 ease-in-out flex items-center justify-center backdrop-blur-md"
+              className="w-32 h-32 sm:w-40 sm:h-40 rounded-full border border-white/20 transition-all duration-1000 ease-in-out flex items-center justify-center backdrop-blur-md"
               style={{
                 background: `radial-gradient(circle, ${theme.glowColor} 0%, rgba(255,255,255,0.03) 80%)`,
               }}

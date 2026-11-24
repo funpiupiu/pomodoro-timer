@@ -34,16 +34,16 @@ export default function BreathingTimerRing({
   const currentModeInfo = TIMER_MODES[mode] || TIMER_MODES.focus;
 
   return (
-    <div className="flex flex-col items-center justify-center relative w-full max-w-md mx-auto my-4 select-none">
+    <div className="flex flex-col items-center justify-center relative w-full max-w-md mx-auto my-1 sm:my-4 select-none">
       {/* Mode Switcher Tabs */}
-      <div className="flex items-center gap-1.5 p-1 rounded-full bg-black/20 border border-white/5 backdrop-blur-md mb-8 shadow-inner">
+      <div className="flex items-center gap-1 sm:gap-1.5 p-1 rounded-full bg-black/20 border border-white/5 backdrop-blur-md mb-5 sm:mb-8 shadow-inner max-w-full">
         {Object.entries(TIMER_MODES).map(([key, info]) => {
           const isActive = mode === key;
           return (
             <button
               key={key}
               onClick={() => switchMode(key)}
-              className={`px-4 py-1.5 text-xs font-medium rounded-full transition-all duration-300 cursor-pointer ${
+              className={`px-3 sm:px-4 py-1.5 min-h-[36px] text-[11px] sm:text-xs font-medium rounded-full transition-all duration-300 cursor-pointer whitespace-nowrap ${
                 isActive ? theme.pillActive : theme.pillInactive
               }`}
             >
@@ -65,8 +65,8 @@ export default function BreathingTimerRing({
               : 'opacity-20'
           }`}
           style={{
-            width: 'min(360px, 85vw)',
-            height: 'min(360px, 85vw)',
+            width: 'min(340px, 78vw)',
+            height: 'min(340px, 78vw)',
             background: isOvertime
               ? 'radial-gradient(circle, rgba(251, 191, 36, 0.3) 0%, rgba(0,0,0,0) 70%)'
               : `radial-gradient(circle, ${theme.glowColor} 0%, rgba(0,0,0,0) 70%)`,
@@ -75,7 +75,7 @@ export default function BreathingTimerRing({
 
         <svg
           viewBox="0 0 320 320"
-          className="w-[260px] h-[260px] sm:w-[320px] sm:h-[320px] transform -rotate-90 filter drop-shadow-[0_4px_24px_rgba(0,0,0,0.25)]"
+          className="w-[236px] h-[236px] sm:w-[296px] sm:h-[296px] lg:w-[320px] lg:h-[320px] transform -rotate-90 filter drop-shadow-[0_4px_24px_rgba(0,0,0,0.25)]"
         >
           {/* Background Track */}
           <circle

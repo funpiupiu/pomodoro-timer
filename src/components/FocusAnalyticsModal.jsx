@@ -89,34 +89,34 @@ export default function FocusAnalyticsModal({
         </div>
 
         {/* 3 Metric Summary Cards */}
-        <div className="grid grid-cols-3 gap-3 my-5">
-          <div className="p-3.5 rounded-2xl bg-white/5 border border-white/5 text-center">
-            <div className="flex items-center justify-center gap-1 text-xs text-white/60 mb-1">
-              <Clock className="w-3.5 h-3.5" style={{ color: theme.accentColor }} />
-              <span>Time Focused</span>
+        <div className="grid grid-cols-3 gap-2 sm:gap-3 my-4 sm:my-5">
+          <div className="p-2.5 sm:p-3.5 rounded-2xl bg-white/5 border border-white/5 text-center">
+            <div className="flex items-center justify-center gap-1 text-[10px] sm:text-xs text-white/60 mb-1">
+              <Clock className="w-3 h-3 sm:w-3.5 sm:h-3.5 flex-shrink-0" style={{ color: theme.accentColor }} />
+              <span className="truncate">Focused</span>
             </div>
-            <div className="text-lg font-semibold text-white">
+            <div className="text-sm sm:text-lg font-semibold text-white">
               {totalHours > 0 ? `${totalHours}h ` : ''}{totalRemainingMinutes}m
             </div>
           </div>
 
-          <div className="p-3.5 rounded-2xl bg-white/5 border border-white/5 text-center">
-            <div className="flex items-center justify-center gap-1 text-xs text-white/60 mb-1">
-              <Award className="w-3.5 h-3.5 text-amber-400" />
-              <span>Sessions</span>
+          <div className="p-2.5 sm:p-3.5 rounded-2xl bg-white/5 border border-white/5 text-center">
+            <div className="flex items-center justify-center gap-1 text-[10px] sm:text-xs text-white/60 mb-1">
+              <Award className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-amber-400 flex-shrink-0" />
+              <span className="truncate">Sessions</span>
             </div>
-            <div className="text-lg font-semibold text-white">
+            <div className="text-sm sm:text-lg font-semibold text-white">
               {stats.totalSessionsCompleted || 0}
             </div>
           </div>
 
-          <div className="p-3.5 rounded-2xl bg-white/5 border border-white/5 text-center">
-            <div className="flex items-center justify-center gap-1 text-xs text-white/60 mb-1">
-              <Flame className="w-3.5 h-3.5 text-orange-400" />
-              <span>Day Streak</span>
+          <div className="p-2.5 sm:p-3.5 rounded-2xl bg-white/5 border border-white/5 text-center">
+            <div className="flex items-center justify-center gap-1 text-[10px] sm:text-xs text-white/60 mb-1">
+              <Flame className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-orange-400 flex-shrink-0" />
+              <span className="truncate">Streak</span>
             </div>
-            <div className="text-lg font-semibold text-white">
-              {stats.currentStreak || 0} days
+            <div className="text-sm sm:text-lg font-semibold text-white">
+              {stats.currentStreak || 0}d
             </div>
           </div>
         </div>

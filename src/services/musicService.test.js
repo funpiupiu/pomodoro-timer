@@ -5,7 +5,6 @@ import {
   CLASSICAL_PLAYLIST,
   CHINESE_PLAYLIST,
   NOTE_FREQS,
-  GENRES,
 } from '../constants/musicPlaylists';
 import { musicService } from './musicService';
 
@@ -13,15 +12,38 @@ describe('Multi-Genre Music Suite & Music Service', () => {
   beforeEach(() => {
     musicService.pause();
     musicService.setCategory('all');
+    musicService.setPlaybackRate(1.0);
     musicService.currentIndex = 0;
     musicService.currentTime = 0;
   });
 
-  it('should define all 14 curated mindful tracks across 3 distinct genres', () => {
-    expect(ALL_MUSIC_TRACKS.length).toBe(14);
+  it('should define all 24 curated mindful tracks across 3 distinct genres', () => {
+    expect(ALL_MUSIC_TRACKS.length).toBe(24);
+    expect(CHINESE_PLAYLIST.length).toBe(16);
     expect(BAROQUE_PLAYLIST.length).toBe(4);
     expect(CLASSICAL_PLAYLIST.length).toBe(4);
-    expect(CHINESE_PLAYLIST.length).toBe(6);
+
+    // 10 New Hot Chinese tracks
+    const chineseIds = CHINESE_PLAYLIST.map((t) => t.id);
+    const expectedChineseIds = [
+      'baiyueguang',
+      'nidedaan',
+      'cuoweishikong',
+      'xingchendahai',
+      'hongsegaogenxie',
+      'dayu',
+      'gaobaiqiqiu',
+      'xiaozhang',
+      'tonghua',
+      'cijiumenhuiyi',
+      'feiniao',
+      'duwo',
+      'mangzhong',
+      'qinghuaci',
+      'yanhuayileng',
+      'zuoshouzhiyue',
+    ];
+    expectedChineseIds.forEach((id) => expect(chineseIds).toContain(id));
 
     // Baroque tracks
     const baroqueIds = BAROQUE_PLAYLIST.map((t) => t.id);
@@ -37,15 +59,6 @@ describe('Multi-Genre Music Suite & Music Service', () => {
     expect(classicalIds).toContain('chopin_nocturne');
     expect(classicalIds).toContain('beethoven_moonlight');
 
-    // Chinese tracks
-    const chineseIds = CHINESE_PLAYLIST.map((t) => t.id);
-    expect(chineseIds).toContain('feiniao');
-    expect(chineseIds).toContain('duwo');
-    expect(chineseIds).toContain('mangzhong');
-    expect(chineseIds).toContain('qinghuaci');
-    expect(chineseIds).toContain('yanhuayileng');
-    expect(chineseIds).toContain('zuoshouzhiyue');
-
     // All tracks have required properties
     ALL_MUSIC_TRACKS.forEach((track) => {
       expect(track.title).toBeDefined();
@@ -54,6 +67,20 @@ describe('Multi-Genre Music Suite & Music Service', () => {
       expect(track.duration).toBeGreaterThan(60);
       expect(track.bpm).toBeGreaterThan(40);
       expect(track.coverColor).toBeDefined();
+    });
+  });
+
+  it('should provide synchronized 3-layer lyrics (Hanzi, Pinyin, Vietnamese) for all 16 Chinese tracks', () => {
+    CHINESE_PLAYLIST.forEach((track) => {
+      expect(Array.isArray(track.lyrics)).toBe(true);
+      expect(track.lyrics.length).toBeGreaterThanOrEqual(6);
+      track.lyrics.forEach((line) => {
+        expect(typeof line.time).toBe('number');
+        expect(line.time).toBeGreaterThanOrEqual(0);
+        expect(line.zh.length).toBeGreaterThan(0);
+        expect(line.pinyin.length).toBeGreaterThan(0);
+        expect(line.vi.length).toBeGreaterThan(0);
+      });
     });
   });
 
@@ -80,26 +107,22 @@ describe('Multi-Genre Music Suite & Music Service', () => {
   });
 
   it('should switch categories and filter playlists smoothly', () => {
-    // Default is all
     expect(musicService.selectedCategory).toBe('all');
-    expect(musicService.playlist.length).toBe(14);
+    expect(musicService.playlist.length).toBe(24);
 
-    // Switch to baroque
     musicService.setCategory('baroque');
     expect(musicService.selectedCategory).toBe('baroque');
     expect(musicService.playlist.length).toBe(4);
     expect(musicService.currentTrack.category).toBe('baroque');
 
-    // Switch to classical
     musicService.setCategory('classical');
     expect(musicService.selectedCategory).toBe('classical');
     expect(musicService.playlist.length).toBe(4);
     expect(musicService.currentTrack.category).toBe('classical');
 
-    // Switch to chinese
     musicService.setCategory('chinese');
     expect(musicService.selectedCategory).toBe('chinese');
-    expect(musicService.playlist.length).toBe(6);
+    expect(musicService.playlist.length).toBe(16);
     expect(musicService.currentTrack.category).toBe('chinese');
   });
 
@@ -109,34 +132,28 @@ describe('Multi-Genre Music Suite & Music Service', () => {
 
     musicService.playTrack(1);
     expect(musicService.currentIndex).toBe(1);
-    expect(musicService.currentTrack.id).toBe('pachelbel_canon');
+    expect(musicService.currentTrack.id).toBe('nidedaan');
     expect(musicService.isPlaying).toBe(true);
 
     musicService.pause();
     expect(musicService.isPlaying).toBe(false);
 
-    // Next track
     musicService.nextTrack();
     expect(musicService.currentIndex).toBe(2);
-    expect(musicService.currentTrack.id).toBe('vivaldi_winter');
+    expect(musicService.currentTrack.id).toBe('cuoweishikong');
 
-    // Prev track
     musicService.prevTrack();
     expect(musicService.currentIndex).toBe(1);
 
-    // Seek
     musicService.seek(60);
     expect(musicService.currentTime).toBe(60);
 
-    // Volume
     musicService.setVolume(0.75);
     expect(musicService.volume).toBe(0.75);
 
-    // Repeat toggle
     musicService.toggleRepeat();
     expect(musicService.repeatMode).toBe('one');
 
-    // Shuffle toggle
     musicService.toggleShuffle();
     expect(musicService.isShuffled).toBe(true);
   });
@@ -145,22 +162,18 @@ describe('Multi-Genre Music Suite & Music Service', () => {
     expect(musicService.playbackRate).toBe(1.0);
     expect(musicService.availableRates).toEqual([0.75, 1.0, 1.25, 1.5, 2.0]);
 
-    // Set specific speed
     musicService.setPlaybackRate(1.5);
     expect(musicService.playbackRate).toBe(1.5);
 
-    // Set 0.75x slow speed
     musicService.setPlaybackRate(0.75);
     expect(musicService.playbackRate).toBe(0.75);
 
-    // Cycle through speeds: 0.75 -> 1.0 -> 1.25 -> 1.5 -> 2.0 -> 0.75
     musicService.cyclePlaybackRate();
     expect(musicService.playbackRate).toBe(1.0);
 
     musicService.cyclePlaybackRate();
     expect(musicService.playbackRate).toBe(1.25);
 
-    // Subscriber notification receives playbackRate
     let receivedRate = null;
     const unsub = musicService.subscribe((state) => {
       receivedRate = state.playbackRate;

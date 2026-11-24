@@ -123,7 +123,7 @@ export default function MultiTrackSoundMixerModal({
             <Sparkles className="w-3.5 h-3.5 text-amber-400" />
             <span>Zen Presets</span>
           </div>
-          <div className="grid grid-cols-2 gap-2">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
             {SOUND_PRESETS.map((p) => (
               <button
                 key={p.id}
@@ -195,7 +195,7 @@ export default function MultiTrackSoundMixerModal({
 
         {/* Binaural Beats Frequency Section */}
         <div className="my-5 pt-4 border-t border-white/10">
-          <div className="flex items-center justify-between mb-2">
+          <div className="flex flex-wrap items-center justify-between gap-1 mb-2">
             <div className="flex items-center gap-1.5 text-xs font-semibold uppercase text-white/70 tracking-wider">
               <Headphones className="w-3.5 h-3.5" style={{ color: theme.accentColor }} />
               <span>Binaural Brainwave Beats</span>
@@ -203,7 +203,7 @@ export default function MultiTrackSoundMixerModal({
             <span className="text-[10px] text-amber-300/80 font-mono">Use headphones for effect</span>
           </div>
 
-          <div className="grid grid-cols-2 gap-2 my-2.5">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 my-2.5">
             {Object.values(BINAURAL_MODES).map((bm) => {
               const isSelected = (settings.binauralMode || 'none') === bm.id;
               return (

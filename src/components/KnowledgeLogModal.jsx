@@ -166,14 +166,14 @@ export default function KnowledgeLogModal({
                   className="p-4 rounded-2xl bg-white/5 border border-white/5 hover:border-white/15 transition-all group relative"
                 >
                   {/* Top line: Task title, tag, date and delete */}
-                  <div className="flex items-center justify-between pb-2 mb-2 border-b border-white/5">
+                  <div className="flex flex-wrap items-center justify-between gap-2 pb-2 mb-2 border-b border-white/5">
                     <div className="flex items-center gap-2 min-w-0">
-                      <span className="text-xs font-semibold text-white truncate max-w-sm">
+                      <span className="text-xs font-semibold text-white truncate max-w-[200px] sm:max-w-sm">
                         {log.taskTitle || 'Focus Session'}
                       </span>
                       {log.tag && (
                         <span
-                          className="text-[10px] px-2 py-0.5 rounded-md font-mono"
+                          className="text-[10px] px-2 py-0.5 rounded-md font-mono flex-shrink-0"
                           style={{
                             backgroundColor: `${tagObj.color}20`,
                             color: tagObj.color,
@@ -191,7 +191,7 @@ export default function KnowledgeLogModal({
                       </span>
                       <button
                         onClick={() => handleDelete(log.id)}
-                        className="opacity-0 group-hover:opacity-100 p-1 text-white/40 hover:text-rose-400 hover:bg-white/10 rounded transition-all cursor-pointer"
+                        className="opacity-75 sm:opacity-0 sm:group-hover:opacity-100 p-1.5 text-white/50 hover:text-rose-400 hover:bg-white/10 rounded transition-all cursor-pointer"
                         title="Delete reflection"
                       >
                         <Trash2 className="w-3.5 h-3.5" />
